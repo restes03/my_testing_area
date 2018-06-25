@@ -30,7 +30,7 @@ var req = http.request(options, function (res) {
         // add each element to the array 'chunks'
         chunks.push(chunk);
     });
-
+    // adding a useless comment...
     res.on("end", function () {
 
         // concatenate the array
