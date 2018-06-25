@@ -1,4 +1,4 @@
-/** 
+/* * 
  * http.request api: https://nodejs.org/api/http.html#http_http_request_options_callback 
 */
 
@@ -15,9 +15,10 @@ const SEED = "";
 
 var options = {
     "method" : "GET",
-    "hostname" : "localhost",
-    "port" : 8080,
-    "path" : `/api/maze/generate/${HEIGHT}/${WIDTH}/${SEED}`
+    "hostname" : "maze-service-code-camp.a3c1.starter-us-west-1.openshiftapps.com",
+    "port" : null,
+    // "path" : `/get/${HEIGHT}/${WIDTH}/${SEED}`
+    "path" : `/get`
     
 };
 
@@ -26,13 +27,29 @@ var req = http.request(options, function (res) {
     var chunks = [];
     console.log(res.statusCode);
     res.on("data", function (chunk) {
-        
+        // add each element to the array 'chunks'
         chunks.push(chunk);
     });
+
     res.on("end", function () {
-        var body = Buffer.concat(chunks);
+
+        // concatenate the array
+        var jsonObj1 = Buffer.concat(chunks);
+        console.log(typeof(jsonObj1));
         
-        console.log(body.toString());
+        var jsonObj = JSON.parse(jsonObj1);
+        console.log(typeof(jsonObj));
+
+        var jsonObj2 = JSON.parse(jsonObj);
+        console.log(typeof(jsonObj2));
+    
+        for (var key in jsonObj2) {
+            if (jsonObj2.hasOwnProperty(key)) {
+              var val = jsonObj2[key];
+              console.log(val);
+            }
+          }
+
     });
 });
 
