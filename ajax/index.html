@@ -1,14 +1,15 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8"> 
 	<!-- reset all browser defaults -->
 	<link rel="stylesheet" href="reset.css" />
 	<!-- custom stylesheet -->
 	<link rel="stylesheet" href="mg_styles.css" />
-	<title>JavaScript DFS maze generator</title>
+	<title>Code Camp 2018 Spectator View</title>
 </head>
 
-<body>
+<body onload="init()">
 	<div id="menuDiv">   
 		<div id="form_header">Maze Generator</div>
 		<div id="mainMenu">
@@ -22,8 +23,10 @@
 	<nav id='nav_bar'>
 		<a id='solve' href='javascript: solve_init(); void(0)'>Solve</a> |
 		<a href='javascript: function(){}; void(0)'>Save</a>
-	</nav>
-	
-	<script src="update_maze_state.js"></script>
+    </nav>
+    
+	<!-- Include maze update script -->
+    <script src="update_maze_state.js"></script>
+    
 </body>
 </html>
