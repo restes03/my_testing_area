@@ -26,14 +26,13 @@ var options = {
 var req = http.request(options, function (res) {
     var chunks = [];
     console.log(res.statusCode);
+    // Event listener for 'data' 
+    // The chunk emitted in each 'data' event is a Buffer.
     res.on("data", function (chunk) {
-        // add each element to the array 'chunks'
         chunks.push(chunk);
     });
-    // adding a useless comment...
+    // ... At the 'end', concatenate and stringify it.
     res.on("end", function () {
-
-        // concatenate the array
         var jsonObj1 = Buffer.concat(chunks);
         console.log(typeof(jsonObj1));
         

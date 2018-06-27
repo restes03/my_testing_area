@@ -1,0 +1,134 @@
+/* Maze generator style sheet
+ * Russell Estes
+ * 
+ */
+  
+
+body {
+   font-family: "Lucida Sans", Verdana, Arial, sans-serif;
+   font-size: 16px;
+}
+
+.textBox {
+	width: 4em;
+	height: 1em;
+	padding: .2em;
+	border: 1px solid #00B9FF;
+}
+
+.rounded_input_control{
+   border: 1px solid #00B9FF;
+   border-radius: 5px;
+   text-align: left;
+   padding: 0.4em .7em 0.3em .7em;
+   margin: 0.3em;
+}
+
+#form_header{
+	width: 20.5em;
+	margin: .3em auto;
+	text-align: center;
+	border: 1px solid #00B9FF;
+	background-color: #00B9FF;
+	border-radius: 5px 30px 2px 2px;
+	color: white;
+	padding: 0.4em .7em 0.3em .7em;
+}
+
+.inputBox {
+	color: #6B6B6B;
+}
+
+.menuButton {
+	border: none;
+	background-color: #FAFCFF;
+	color: #00B9FF;
+	outline: none;
+}
+
+ 
+
+.menuButton:hover {
+	border: 1px solid #00B9FF;
+	margin: .225em;
+
+
+}
+
+#mainMenu {
+	margin: .4em auto;
+	background-color: #FAFCFF;
+	width: 19.9em;
+	border: 1px solid #00B9FF;
+	padding: 1em 1em 1em 1em;
+	border-radius: 5px 5px 5px 30px;
+}
+
+#mainMenu p {
+	margin: 1em 0 1em 0;
+}
+
+#maze_container {
+	background-color: #dbdbdb;
+	margin: 2em auto;
+}
+
+.row {
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+
+.cell {
+	border: 1px solid #00B9FF;
+	background-color: #FAFCFF;
+	display: inline-block;
+	height: 30px;
+	width: 30px;
+	text-align: center;
+	line-height: 30px;
+	vertical-align: middle;
+	margin: 0;
+	padding: 0;
+}
+
+.openEast {
+	border-right-color: #FAFCFF;
+}
+
+.openNorth {
+	border-top-color: #FAFCFF;
+}
+
+.openSouth {
+	border-bottom-color: #FAFCFF;
+}
+
+.openWest {
+	border-left-color: #FAFCFF;
+}
+
+.solutionPath {
+	background-color: #d8ecff;
+
+}
+
+#nav_bar {
+	text-align:center;
+	margin: 2em auto;
+}
+
+
+a:link {
+    color: #00B9FF;
+    text-decoration: none;
+}
+
+a:visited {
+    color: #00B9FF;
+}
+	
+a:hover {
+    text-decoration: underline;
+}
+
