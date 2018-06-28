@@ -1,10 +1,13 @@
 /** TODO:
  * 
- * 1. capture json in server response & assign to object
- * 2. print json object to body
- * 3. See "Bypassing the cache"
- * https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest#Cross-site_XMLHttpRequest
+ * 1. get height and length before generating the maze
+ * 2. determine which variables are needed before proceeding
+ * 3. carve maze
+ * 4. solve maze
+ * 10. fix error handling
  */
+
+
 
 /** Global Variables **/
 
@@ -12,42 +15,34 @@
 // Made two-dimensional in init()
 var maze_index = [];
 
+// Stores bitwise values for each cell indicating open doors
+// Made two-dimensional in init()
+var maze_map = [];
+
+// Time between refresh cycles
+var timeout = 500;
+
+
 // Number of rows and columns contained in the maze
 var rows;
 var cols;
 
-// Stores bitwise values for each cell indicating open doors
-// Made two-dimensional in init()
-var maze_map = [];
+// REST URL from which to fetch data
+var URL = 'http://maze-service-code-camp.a3c1.starter-us-west-1.openshiftapps.com/get/10:15:SimpleSample';
+
+
 
 
 
 
 function init() {
-        makeRequest();
-
-         // get inputs
-    rows = 10;
-    cols = 10;
-
-    // initialize maze map
-    for (var i = 0; i < rows; i++) {
-        maze_index.push(new Array(cols));
-        maze_map.push(new Array(cols));
-        for (var j = 0; j < cols; j++) {
-            maze_index[i][j] = 0;
-            maze_map[i][j] = 0;
-        }
-    }
-
-    // Generate grid
-    gen_maze(rows, cols);
-
+    
+    setInterval(update_loop, 1000);
 
 };
 
-
-function makeRequest() {
+function update_loop() {  
+    console.log("Sending request...");
     var request = new XMLHttpRequest();
 
     
@@ -58,12 +53,12 @@ function makeRequest() {
     }
 
     
-    request.onreadystatechange = alertContents;
-    request.open('GET', 'http://maze-service-code-camp.a3c1.starter-us-west-1.openshiftapps.com/get/10:15:SimpleSample');
+    request.onreadystatechange = getResponse;
+    request.open('GET', URL);
     request.responseType='json';
     request.send();
-
-    function alertContents() {
+    
+    function getResponse() {
 
         // readyState values:
         // 0 (uninitialized) or (request not initialized)
@@ -73,24 +68,39 @@ function makeRequest() {
         // 4 (complete) or (request finished and response is ready)
     
         if (request.readyState === request.DONE) {
-            alert(request.readyState);
           if (request.status === 200) {
-              
-            // assign json to element.innerHTML
+
+            var mazeJson = request.response;
+            rows = Number(mazeJson.width);
+            cols = Number(mazeJson.height);
+
+            // Initialize maze arrays
+            initMaze();
+            // generate maze grid
+            genMaze(rows, cols);
             
-            var superHeroesText = request.response;
-            alert(JSON.stringify(superHeroesText));
             // var superHeroes = JSON.parse(superHeroesText);
           } else {
-            alert(request.status)
-          }
+            alert("Unable to connect to server. \n\n Request status: " + request.status);
+            }
         }
-      }
-  };
+    }
+};
 
 
+function initMaze() {
+      // initialize maze map
+    for (var i = 0; i < rows; i++) {
+        maze_index.push(new Array(cols));
+        maze_map.push(new Array(cols));
+        for (var j = 0; j < cols; j++) {
+            maze_index[i][j] = 0;
+            maze_map[i][j] = 0;
+        }
+    }
+};
 
-/** Function gen_maze(rows, cols)
+/** Function genMaze(rows, cols)
  * Generates a grid of cells which form the fundamental
  * structure of a maze.
  * 
@@ -100,7 +110,7 @@ function makeRequest() {
  * 
  */
 
-function gen_maze(rows, cols) {
+function genMaze(rows, cols) {
   // cells are 30px each having left and right borders
   // of 1px each. Total maze width is then:
   maze_width = cols * 32;
@@ -136,4 +146,4 @@ function gen_maze(rows, cols) {
           maze_index[i][j] = id_string;
       }
   }
-} // end gen_maze()
+}; // end genMaze()
