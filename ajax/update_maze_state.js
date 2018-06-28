@@ -44,11 +44,11 @@ function makeRequest() {
               
             // assign json to element.innerHTML
             
-            // var superHeroesText = request.response;
+            var superHeroesText = request.response;
+            alert(JSON.stringify(superHeroesText));
             // var superHeroes = JSON.parse(superHeroesText);
-            // alert("in here");
           } else {
-            
+            alert(request.status)
           }
         }
       }
