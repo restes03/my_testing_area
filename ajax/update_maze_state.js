@@ -1,11 +1,13 @@
 /** TODO:
  * 
- * 1. redraw div in same container each refresh cycle
- * 2. carve maze using json data
- * 3. provide cell access
- * 4. solve maze
- * 5. refactor getNeighbor. Cycle through an array rather than switch?
- * 5. implement proper error handling
+ * 1. Carve maze using json data
+ * 2. Solve maze
+ * 3. Fading visited path
+ * 4. Store visited cells in stack. 
+ * 4. Highlight solution path
+ * 3. Refactor getNeighbor. Cycle through an array rather than switch?
+ * 9. make sure maze_index[][] values are matching up
+ * 4. implement proper error handling
  */
 
 
@@ -16,16 +18,18 @@
 var rows;
 var cols;
 
-// Index of cell ID's
-// Made two-dimensional in init()
-var maze_index = [];
+// Two-dimensional index of cell ID's
+// Initialized/reset, and made two-dimensional in initMaze()
+var maze_index;
 
-// Stores bitwise values for each cell indicating open doors
-// Made two-dimensional in init()
-var maze_map = [];
+// Two-dimensional map storing bitwise values for each 
+// cell indicating open doors.
+// Initialized/reset, and made two-dimensional in initMaze()
+var maze_map;
 
 // Used by solve_maze() and getNeighbor() to track visited cells
-// List is reset in update_loop() and solve_init()
+// List is reset in the beginning of every iteration of update_loop(),
+// and solve_init()
 var visited_list;
 
 // Using an enum simplifies the process of randomizing/shuffling
@@ -42,7 +46,7 @@ var DIRECTION = Object.freeze({
 var interval_ms = 1000;
 
 // REST API to fetch maze state
-var URL = 'http://maze-service-code-camp.a3c1.starter-us-west-1.openshiftapps.com/get/10:15:SimpleSample';
+var URL = 'http://localhost:8080/get/10:10:Snippy';
 
 
 
@@ -51,8 +55,8 @@ var URL = 'http://maze-service-code-camp.a3c1.starter-us-west-1.openshiftapps.co
 
 function init() {
     
-    setInterval(update_loop, interval_ms);
-
+	setInterval(update_loop, interval_ms);
+	
 };
 
 function update_loop() {  
@@ -72,7 +76,7 @@ function update_loop() {
     request.onreadystatechange = getResponse;
     request.open('GET', URL);
     request.responseType='json';
-    request.send();
+	request.send();
     
     function getResponse() {
 
@@ -88,18 +92,18 @@ function update_loop() {
 
             var mazeJson = request.response;
             rows = Number(mazeJson.width);
-            cols = Number(mazeJson.height);
+			cols = Number(mazeJson.height);
 
-            // Initialize maze arrays
-            initMaze();
-            
-            // generate maze grid
-            genMazeGrid(rows, cols);
+ 
+			// generate maze grid
+			genMazeGrid(rows, cols);
 
-            // carve maze
-            carve_maze("0x0");
+			// carve maze
+			carve_maze(mazeJson);
+
+			// carve a random maze
+            // carve_maze_random("0x0");
             
-            // var superHeroes = JSON.parse(superHeroesText);
           } else {
             alert("Unable to connect to server. \n\n Request status: " + request.status);
             }
@@ -108,21 +112,6 @@ function update_loop() {
 };
 
 
-function initMaze() {
-	  // initialize maze map
-	  maze_index = [];
-	  maze_map = [];
-    for (var i = 0; i < rows; i++) {
-        maze_index.push(new Array(cols));
-        maze_map.push(new Array(cols));
-        for (var j = 0; j < cols; j++) {
-            maze_index[i][j] = 0;
-            maze_map[i][j] = 0;
-        }
-    }
-
-
-};
 
 /** Function genMazeGrid(rows, cols)
  * Generates a grid of cells which form the fundamental
@@ -135,8 +124,22 @@ function initMaze() {
  */
 
 function genMazeGrid(rows, cols) {
-  // cells are 30px each having left and right borders
-  // of 1px each. Total maze width is then:
+
+	// Initialize maze arrays
+	// initialize maze_map & maze_index
+	maze_index = [];
+	maze_map = [];
+	for (var i = 0; i < rows; i++) {
+		maze_index.push(new Array(cols));
+		maze_map.push(new Array(cols));
+		for (var j = 0; j < cols; j++) {
+			maze_index[i][j] = 0;
+			maze_map[i][j] = 0;
+		}
+	}
+
+	// cells are 30px each having left and right borders
+	// of 1px each. Total maze width is then:
     var maze_width = cols * 32;
     maze_container = document.getElementById("maze_container");
 
@@ -180,7 +183,28 @@ function genMazeGrid(rows, cols) {
 }; // end genMazeGrid()
 
 
-/** Function carve_maze(current_cell_index)
+function carve_maze(mazeJson) {
+	// initialize maze
+	for(var row = 0; row < rows.length; row++) {
+		for (var col = 0; col < cols.length; col++) {
+			maze_map[row][col] = mazeJson.cells[row][col].exits;
+			
+			for (var i = 1; i <= 8; 2*i) {
+				if (maze_map[row][col] & i) {
+					// why isnt maze being carved???
+					make_door(maze_index[row][col], i);
+				}
+			}
+
+		}
+	}
+
+
+
+}
+
+
+/** Function carve_maze_random(current_cell_index)
  * Carves a path from starting cell at 0x0 to a 
  * random endpoint.
  * 
@@ -188,7 +212,7 @@ function genMazeGrid(rows, cols) {
  * 					having form '1x4' where 1 is the row
  * 					number and 4 is the column number. 
  */
-function carve_maze(current_cell_index) {
+function carve_maze_random(current_cell_index) {
 
     /** Depth-first traversal
 	*
@@ -218,14 +242,14 @@ function carve_maze(current_cell_index) {
 	        var new_cell_index = getNeighbor(current_cell_index, directions[i]);
 	        if (new_cell_index != "-1x-1") {
 	            // remove borders between cells...                      
-	            make_door(current_cell_index, new_cell_index, directions[i]);
-	            carve_maze(new_cell_index);
+	            make_door_random(current_cell_index, new_cell_index, directions[i]);
+	            carve_maze_random(new_cell_index);
 	        }
 	        else {	// neighboring cell is invalid. Try next.
 				continue;
 			}
 	    }
-}; // end carve_maze
+}; // end carve_maze_random
 
 
 /** Function getNeighbor(current_cell_index, direction)
@@ -353,7 +377,24 @@ function getNeighbor(current_cell_index, direction) {
 };
 
 
-/** Function make_door(current_cell_index, new_cell_index, direction)
+function make_door(current_cell_index, bitwise_exits) {
+	
+		// TODO: Consider looping through bitwise values to prevent repetition
+		if (bitwise_exits & 1) {	//	north open
+			document.getElementById(current_cell_index).className +=" .openNorth";
+		}
+		else if (bitwise_exits & 2) {	//	north open
+			document.getElementById(current_cell_index).className +=" .openSouth";
+		}
+		else if (bitwise_exits & 4) {	//	north open
+			document.getElementById(current_cell_index).className +=" .openEast";
+		}
+		else if (bitwise_exits & 8) {	//	north open
+			document.getElementById(current_cell_index).className +=" .openWest";
+		}	
+}
+
+/** Function make_door_random(current_cell_index, new_cell_index, direction)
  * This function performs two things: 
  * 	1) Makes a door between two cells. 
  * 	2) Cells are mapped using a bitwise value (maze_map[][]);
@@ -366,7 +407,7 @@ function getNeighbor(current_cell_index, direction) {
  *
  */
 
-function make_door(current_cell_index, new_cell_index, direction) {
+function make_door_random(current_cell_index, new_cell_index, direction) {
 	
 
 	
@@ -426,7 +467,7 @@ function make_door(current_cell_index, new_cell_index, direction) {
 
     
     
-};	// end make_door()
+};	// end make_door_random()
 
 /** Function solve_init()
  * This function resets the visited list, and passes the starting
