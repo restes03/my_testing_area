@@ -24,8 +24,9 @@ var maze_index = [];
 // Made two-dimensional in init()
 var maze_map = [];
 
-// Used by carve_maze and solve_maze to track visited cells
-var visited_list = ["0x0"];
+// Used by solve_maze() and getNeighbor() to track visited cells
+// List is reset in update_loop() and solve_init()
+var visited_list;
 
 // Using an enum simplifies the process of randomizing/shuffling
 // directions to traverse.
@@ -38,7 +39,7 @@ var DIRECTION = Object.freeze({
 });
 
 // Time between refresh cycles
-var interval_ms = 500;
+var interval_ms = 1000;
 
 // REST API to fetch maze state
 var URL = 'http://maze-service-code-camp.a3c1.starter-us-west-1.openshiftapps.com/get/10:15:SimpleSample';
@@ -55,9 +56,11 @@ function init() {
 };
 
 function update_loop() {  
+    // Set/reset visited list 
+    visited_list = ["0x0"];
+    
     console.log("Sending request...");
     var request = new XMLHttpRequest();
-
     
     // Primitve error checking
     if (!request) {
@@ -94,7 +97,7 @@ function update_loop() {
             genMazeGrid(rows, cols);
 
             // carve maze
-            //carve_maze("0x0");
+            carve_maze("0x0");
             
             // var superHeroes = JSON.parse(superHeroesText);
           } else {
@@ -106,7 +109,9 @@ function update_loop() {
 
 
 function initMaze() {
-      // initialize maze map
+	  // initialize maze map
+	  maze_index = [];
+	  maze_map = [];
     for (var i = 0; i < rows; i++) {
         maze_index.push(new Array(cols));
         maze_map.push(new Array(cols));
@@ -115,6 +120,8 @@ function initMaze() {
             maze_map[i][j] = 0;
         }
     }
+
+
 };
 
 /** Function genMazeGrid(rows, cols)
@@ -130,15 +137,21 @@ function initMaze() {
 function genMazeGrid(rows, cols) {
   // cells are 30px each having left and right borders
   // of 1px each. Total maze width is then:
-  maze_width = cols * 32;
-    var maze_container;
+    var maze_width = cols * 32;
+    maze_container = document.getElementById("maze_container");
 
-    if(document.getElementById("maze_container")==null){
+    // if(document.getElementById("maze_container")==null){
+    if (maze_container == null) {
         maze_container = document.createElement('div');
         maze_container.setAttribute("id", "maze_container");
         document.body.appendChild(maze_container);
         maze_container.style.width = maze_width + "px";
-  }
+    }
+    else {
+        maze_container.innerHTML = "";
+
+    }
+    
  
 
   // generate grid having rows x cols
@@ -195,6 +208,8 @@ function carve_maze(current_cell_index) {
     * 	http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking
     **/
 
+
+
 	// randomize a list of four directions 
 	// TODO: At most, only three directions are possible.
     var directions = shuffle([DIRECTION.N, DIRECTION.S, DIRECTION.E, DIRECTION.W]);
@@ -202,8 +217,8 @@ function carve_maze(current_cell_index) {
 		for (var i = 0; i < directions.length; i++) {
 	        var new_cell_index = getNeighbor(current_cell_index, directions[i]);
 	        if (new_cell_index != "-1x-1") {
-	            // remove borders between cells...
-	            open(current_cell_index, new_cell_index, directions[i]);
+	            // remove borders between cells...                      
+	            make_door(current_cell_index, new_cell_index, directions[i]);
 	            carve_maze(new_cell_index);
 	        }
 	        else {	// neighboring cell is invalid. Try next.
@@ -230,6 +245,7 @@ function carve_maze(current_cell_index) {
 function getNeighbor(current_cell_index, direction) {
 
     var new_cell_index;
+    
     var temp = current_cell_index.split("x");
     var row = Number(temp[0]);
     var col = Number(temp[1]);
@@ -269,7 +285,7 @@ function getNeighbor(current_cell_index, direction) {
 						} 
 						else {
 							new_cell_index = "-1x-1";
-						}visited_list
+						}
 					} 
 					else {
 						new_cell_index = "-1x-1";
@@ -337,19 +353,20 @@ function getNeighbor(current_cell_index, direction) {
 };
 
 
-/** Function open(current_cell_index, new_cell_index, direction)
+/** Function make_door(current_cell_index, new_cell_index, direction)
  * This function performs two things: 
- * 	1) Opens walls standing between two cells. 
+ * 	1) Makes a door between two cells. 
  * 	2) Cells are mapped using a bitwise value (maze_map[][]);
  * 
  *
  * @param	current_cell_index	index of starting cell
  * @param	new_cell_index		index of ending cell
- * @param	direction		direction from current cell to open
+ * @param	direction		    direction to open door leading
+ *                              out of current cell.
  *
  */
 
-function open(current_cell_index, new_cell_index, direction) {
+function make_door(current_cell_index, new_cell_index, direction) {
 	
 
 	
@@ -369,7 +386,7 @@ function open(current_cell_index, new_cell_index, direction) {
 	switch (direction) {
 		case DIRECTION.N:
 		{
-			// open wall between cells
+			// Make door between two adjacent cells
 			current_cell.className += " openNorth";
 			new_cell.className += " openSouth";
 			
@@ -409,13 +426,14 @@ function open(current_cell_index, new_cell_index, direction) {
 
     
     
-};	// end open()
+};	// end make_door()
 
 /** Function solve_init()
  * This function resets the visited list, and passes the starting
  * cell to solve_maze. */
 function solve_init() {
-	visited_list = [];	//	reset visited_list to be used with solve_maze
+    visited_list = ["0x0"] ;	//	reset visited_list to be used with solve_maze
+    
 	solve_maze("0x0");
 };
 
@@ -441,7 +459,7 @@ function solve_maze(current_cell_index) {
     var row = Number(temp[0]);
     var col = Number(temp[1]);
 
-		
+		// TODO: Consider looping through bitwise values to prevent repetition
 		if (maze_map[row][col] & 1) {	//	north open
 			if (!visited_list.includes(maze_index[rows-1][cols-1])) {
 				solve_maze(getNeighbor(current_cell_index, DIRECTION.N));
