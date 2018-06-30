@@ -93,7 +93,6 @@ function update_loop() {
             var mazeJson = request.response;
             rows = Number(mazeJson.width);
 			cols = Number(mazeJson.height);
-
  
 			// generate maze grid
 			genMazeGrid(rows, cols);
@@ -106,7 +105,7 @@ function update_loop() {
             
           } else {
             alert("Unable to connect to server. \n\n Request status: " + request.status);
-            }
+            }			
         }
     }
 };
@@ -185,11 +184,11 @@ function genMazeGrid(rows, cols) {
 
 function carve_maze(mazeJson) {
 	// initialize maze
-	for(var row = 0; row < rows.length; row++) {
-		for (var col = 0; col < cols.length; col++) {
+	// console.log(rows.length);
+	for(var row = 0; row < rows; row++) {
+		for (var col = 0; col < cols; col++) {
 			maze_map[row][col] = mazeJson.cells[row][col].exits;
-			
-			for (var i = 1; i <= 8; 2*i) {
+			for (var i = 1; i <= 8; i*=2) {
 				if (maze_map[row][col] & i) {
 					// why isnt maze being carved???
 					make_door(maze_index[row][col], i);
@@ -378,19 +377,18 @@ function getNeighbor(current_cell_index, direction) {
 
 
 function make_door(current_cell_index, bitwise_exits) {
-	
-		// TODO: Consider looping through bitwise values to prevent repetition
+
 		if (bitwise_exits & 1) {	//	north open
-			document.getElementById(current_cell_index).className +=" .openNorth";
+			document.getElementById(current_cell_index).className +=" openNorth";
 		}
 		else if (bitwise_exits & 2) {	//	north open
-			document.getElementById(current_cell_index).className +=" .openSouth";
+			document.getElementById(current_cell_index).className +=" openSouth";
 		}
 		else if (bitwise_exits & 4) {	//	north open
-			document.getElementById(current_cell_index).className +=" .openEast";
+			document.getElementById(current_cell_index).className +=" openEast";
 		}
 		else if (bitwise_exits & 8) {	//	north open
-			document.getElementById(current_cell_index).className +=" .openWest";
+			document.getElementById(current_cell_index).className +=" openWest";
 		}	
 }
 
