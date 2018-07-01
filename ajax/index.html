@@ -7,14 +7,48 @@
 	<!-- custom stylesheet -->
 	<link rel="stylesheet" href="mg_styles.css" />
 	<title>Code Camp 2018 Spectator View</title>
+	<style>
+	table, th, thead, td {
+		border: 1px solid black;
+		border-collapse: collapse;
+		padding: 5px;
+		margin-top: 1em;
+	}
+
+	h1 {
+
+		margin-top: 1em;
+	}
+	</style>
 </head>
 
 <body onload="init()">
 	<center>
-	<a href='javascript: URL="http://localhost:8080/get/10:10:Snippy"; void(0)'>10x10:Snippy</a> | 
-	<a href='javascript: URL="http://localhost:8080/get/10:10:KrabbyKrust"; void(0)'>10x10:KrabbyKrust</a> |
-	<a href='javascript: URL="http://localhost:8080/get/10:10:SnarkyShark"; void(0)'>10x10:SnarkyShark</a> |
-	<a href='javascript: URL="http://localhost:8080/get/10:10:SlipperyDevil"; void(0)'>10x10:SlipperyDevil</a>
+		<h1>Mazes</h1>
+		<table border="1">
+			<tr>
+				<td>
+					<a href='javascript: URL="http://localhost:8080/get/10:10:Snippy"; void(0)'>10x10:Snippy</a> 
+				</td>
+			
+			
+				<td>
+					<a href='javascript: URL="http://localhost:8080/get/10:10:KrabbyKrust"; void(0)'>10x10:KrabbyKrust</a>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<a href='javascript: URL="http://localhost:8080/get/10:10:SnarkyShark"; void(0)'>10x10:SnarkyShark</a>
+				</td>
+			
+				<td>
+					<a href='javascript: URL="http://localhost:8080/get/10:10:SlipperyDevil"; void(0)'>10x10:SlipperyDevil</a>
+				</td>
+			</tr>
+
+		</table>
+
+	
 	</center>	
 	
     
