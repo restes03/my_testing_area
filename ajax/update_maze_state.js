@@ -12,6 +12,8 @@
 
 
 
+
+
 /** Global Variables **/
 
 // Number of rows and columns contained in the maze
@@ -43,18 +45,79 @@ var DIRECTION = Object.freeze({
 });
 
 // Time between refresh cycles
-var interval_ms = 1000;
+var interval_ms =500;
 
 // REST API to fetch maze state
-var URL = 'http://localhost:8080/get/10:10:Snippy';
+var URL = 'http://localhost:8080/get/10:10:NewForm';
+
+// When reset_trigger is false, maze needs to be drawn/regenerated
+// This variable should only be get/set using the get/set methods
+// needsReset()/needsReset(bool); 
+var reset_trigger = true;
 
 
 
 
 
+/** Event listeners */
+
+game1.addEventListener("click", () => {
+	URL="http://localhost:8080/get/10:15:SimpleSample";	
+	resetGlobalVars();
+});
+
+game2.addEventListener("click", () => {
+	URL="http://localhost:8080/get/10:10:KrabbyKrust";
+	resetGlobalVars();
+});
+
+game3.addEventListener("click", () => {
+	URL="http://localhost:8080/get/10:10:SnarkyShark";
+	resetGlobalVars();
+});
+
+
+game4.addEventListener("click", () => {
+	URL="http://localhost:8080/get/10:10:SlipperyDevil"; 
+	resetGlobalVars();
+});
+
+game5.addEventListener("click", () => {
+	URL="http://localhost:8080/get/25:50:TooBig";
+	resetGlobalVars();
+});
+
+function resetGlobalVars() {
+	needsReset(true);
+	rows = 0;
+	cols = 0;
+};
+
+
+
+
+
+
+ /** function: needsReset()
+ * Returns true/false depending on whether or not the maze needs
+ * to be reset, such as when spectating a new or different game
+ * 
+ * @return 	mazed_carved, a boolean value
+ */
+function needsReset() {
+	return reset_trigger;
+}
+
+/** Function: needsReset(bool_value)
+ * Sets whether or not the maze needs to be regenerated
+ * @param	bool_value
+  */
+function needsReset(bool_value) {
+	reset_trigger = bool_value;
+}
 
 function init() {
-    
+    URL = prompt("Enter maze URL:", "http://localhost:8080/get/10:10:NewForm");
 	setInterval(update_loop, interval_ms);
 	
 };
@@ -91,18 +154,24 @@ function update_loop() {
           if (request.status === 200) {
 
             var mazeJson = request.response;
-            rows = Number(mazeJson.width);
-			cols = Number(mazeJson.height);
- 
-			// generate maze grid
-			genMazeGrid(rows, cols);
+			
+			if (reset_trigger == true) {
+				
+				rows = Number(mazeJson.height);
+				cols = Number(mazeJson.width);
+				console.log(rows);
+				console.log(cols);
+				// generate maze grid
+				genMazeGrid(rows, cols);
 
-			// carve maze
-			carve_maze(mazeJson);
+				// carve maze
+				carve_maze(mazeJson);
 
-			// carve a random maze
-            // carve_maze_random("0x0");
-            
+				// carve a random maze
+				// carve_maze_random("0x0");
+				
+				reset_trigger = false;
+			}
           } else {
             alert("Unable to connect to server. \n\n Request status: " + request.status);
             }			
@@ -260,11 +329,8 @@ function carve_maze_random(current_cell_index) {
  *									value is of form "row col" where 'row' and
  *									'col' are integers. Value is '-1x-1' if new
  * 									cell has already been visited, or cell does
- * 									not exist within the maze (out of bounds).
- * 									
- * 									
+ * 									not exist within the maze (out of bounds).							
  */
-
 function getNeighbor(current_cell_index, direction) {
 
     var new_cell_index;
@@ -402,9 +468,7 @@ function make_door(current_cell_index, bitwise_exits) {
  * @param	new_cell_index		index of ending cell
  * @param	direction		    direction to open door leading
  *                              out of current cell.
- *
  */
-
 function make_door_random(current_cell_index, new_cell_index, direction) {
 	
 
