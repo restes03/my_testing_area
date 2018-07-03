@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"> 
+	<!-- reset all browser defaults -->
+	<link rel="stylesheet" href="reset.css" />
+	<!-- custom stylesheet -->
+	<link rel="stylesheet" href="mg_styles.css" />
+	<title>Code Camp 2018 Spectator View</title>
+	<style>
+	table, th, thead, td {
+		border: 1px solid black;
+		border-collapse: collapse;
+		padding: 5px;
+		margin-top: 1em;
+	}
+
+	h1 {
+
+		margin-top: 1em;
+	}
+	</style>
+</head>
+
+<body onload="init()">
+	<center>
+		<h1>Mazes</h1>
+		<table border="1">
+			<tr>
+				<td>
+					<a href='javascript: void(0)' id='game1'>10x15:SimpleSample</a> 
+				</td>
+			
+			
+				<td>
+					<a href='javascript: void(0)' id='game2'>10x10:KrabbyKrust</a>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<a href='javascript: void(0)' id='game3'>10x10:SnarkyShark</a>
+				</td>
+			
+				<td>
+					<a href='javascript: void(0)' id='game4'>10x10:SlipperyDevil</a>
+				</td>
+			</tr>
+			<td>
+				<a href='javascript: void(0)' id='game5'>25x50:TooBig</a>
+			</td>
+
+		</table>
+
+	
+	</center>	
+	
+    
+	<!-- Include maze update script -->
+    <script src="update_maze_state.js"></script>
+    
+</body>
+</html>

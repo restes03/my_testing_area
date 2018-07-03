@@ -1,62 +1,139 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8"> 
-	<!-- reset all browser defaults -->
-	<link rel="stylesheet" href="reset.css" />
-	<!-- custom stylesheet -->
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>CodeCamp2018</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/portfolio-item.css" rel="stylesheet">
+    	<!-- Maze stylesheet -->
 	<link rel="stylesheet" href="mg_styles.css" />
-	<title>Code Camp 2018 Spectator View</title>
-	<style>
-	table, th, thead, td {
-		border: 1px solid black;
-		border-collapse: collapse;
-		padding: 5px;
-		margin-top: 1em;
-	}
 
-	h1 {
+  </head>
 
-		margin-top: 1em;
-	}
-	</style>
-</head>
+  <body onload="init()">
 
-<body onload="init()">
-	<center>
-		<h1>Mazes</h1>
-		<table border="1">
-			<tr>
-				<td>
-					<a href='javascript: void(0)' id='game1'>10x15:SimpleSample</a> 
-				</td>
-			
-			
-				<td>
-					<a href='javascript: void(0)' id='game2'>10x10:KrabbyKrust</a>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<a href='javascript: void(0)' id='game3'>10x10:SnarkyShark</a>
-				</td>
-			
-				<td>
-					<a href='javascript: void(0)' id='game4'>10x10:SlipperyDevil</a>
-				</td>
-			</tr>
-			<td>
-				<a href='javascript: void(0)' id='game5'>25x50:TooBig</a>
-			</td>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="#">CodeCamp2018</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="#">Home
+                <span class="sr-only">(current)</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Services</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Contact</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
 
-		</table>
+    <!-- Page Content -->
+    <div class="container">
 
-	
-	</center>	
-	
-    
-	<!-- Include maze update script -->
-    <script src="update_maze_state.js"></script>
-    
-</body>
+      <!-- Portfolio Item Heading -->
+      <h1 class="my-4">Page Heading
+        <small>Secondary Text</small>
+      </h1>
+
+      <!-- Portfolio Item Row -->
+      <div class="row">
+
+        <div class="col-md-8" id="main">
+          
+          
+        </div>
+
+        <div class="col-md-4">
+          <h3 class="my-3">Project Description</h3>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae. Sed dui lorem, adipiscing in adipiscing et, interdum nec metus. Mauris ultricies, justo eu convallis placerat, felis enim.</p>
+          <h3 class="my-3">Project Details</h3>
+          <ul>
+            <li>Lorem Ipsum</li>
+            <li>Dolor Sit Amet</li>
+            <li>Consectetur</li>
+            <li>Adipiscing Elit</li>
+          </ul>
+        </div>
+
+      </div>
+      <!-- /.row -->
+
+      <!-- Related Projects Row -->
+      <h3 class="my-4">Choose game...</h3>
+
+      <div class="row">
+
+        <div class="col-md-3 col-sm-6 mb-4">
+          
+            <button class="teamButton" id="game1">Game 1</button>
+            
+          
+        </div>
+
+        <div class="col-md-3 col-sm-6 mb-4">
+          <button class="teamButton" id="game2">Game 2</button>
+        </div>
+
+        <div class="col-md-3 col-sm-6 mb-4">
+          <button class="teamButton" id="game3">Game 3</button>          
+        </div>
+
+        <div class="col-md-3 col-sm-6 mb-4">
+          <button class="teamButton" id="game4">Game 4</button>
+        </div>
+
+        <div class="col-md-3 col-sm-6 mb-4">
+          <button class="teamButton" id="game5">Game 5</button>
+        </div>
+
+        <div class="col-md-3 col-sm-6 mb-4">
+          <button class="teamButton" id="game6">Game 6</button>
+        </div>
+
+      </div>
+      <!-- /.row -->
+
+    </div>
+    <!-- /.container -->
+
+    <!-- Footer -->
+    <footer class="py-5 bg-dark">
+      <div class="container">
+        <p class="m-0 text-center text-white">Copyright &copy; Your Website 2018</p>
+      </div>
+      <!-- /.container -->
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    	<!-- Maze javascript -->
+      <script src="update_maze_state.js"></script>
+
+  </body>
+
 </html>

@@ -50,10 +50,8 @@ var interval_ms =500;
 // REST API to fetch maze state
 var URL = 'http://localhost:8080/get/10:10:NewForm';
 
-// When reset_trigger is false, maze needs to be drawn/regenerated
-// This variable should only be get/set using the get/set methods
-// needsReset()/needsReset(bool); 
-var reset_trigger = true;
+// When reset_trigger is false, maze needs to be drawn/redrawn
+var reset_trigger = false;
 
 
 
@@ -62,59 +60,61 @@ var reset_trigger = true;
 /** Event listeners */
 
 game1.addEventListener("click", () => {
+	
 	URL="http://localhost:8080/get/10:15:SimpleSample";	
-	resetGlobalVars();
+	
 });
 
 game2.addEventListener("click", () => {
+	
 	URL="http://localhost:8080/get/10:10:KrabbyKrust";
-	resetGlobalVars();
+	
 });
 
 game3.addEventListener("click", () => {
+	
 	URL="http://localhost:8080/get/10:10:SnarkyShark";
-	resetGlobalVars();
+	
 });
 
 
 game4.addEventListener("click", () => {
+	
 	URL="http://localhost:8080/get/10:10:SlipperyDevil"; 
-	resetGlobalVars();
+	
 });
 
 game5.addEventListener("click", () => {
+	
 	URL="http://localhost:8080/get/25:50:TooBig";
-	resetGlobalVars();
+
 });
 
+// occasional unresponsive behavior: URL changes in event listener but the following vars arent reset,
+// as if the entire function wasnt even called.
+
+// After further investigation, console.log calls, but either
+// the variables arent retaining their value or arent being reset
+
+// Upon even further investigation, variables being reset in resetGlobalVars()
+//  arent retaining their value 
+
+// Could it be that resetGlobalVars() or some other function on the stack is competing with
+// setInterval()?
+
+// are event handlers asynchronous? 
+
+// event handler and setInterval() seem to be competing... 
 function resetGlobalVars() {
-	needsReset(true);
+
+	// update instead using maze ID
+	reset_trigger = true;
 	rows = 0;
 	cols = 0;
+
+
 };
 
-
-
-
-
-
- /** function: needsReset()
- * Returns true/false depending on whether or not the maze needs
- * to be reset, such as when spectating a new or different game
- * 
- * @return 	mazed_carved, a boolean value
- */
-function needsReset() {
-	return reset_trigger;
-}
-
-/** Function: needsReset(bool_value)
- * Sets whether or not the maze needs to be regenerated
- * @param	bool_value
-  */
-function needsReset(bool_value) {
-	reset_trigger = bool_value;
-}
 
 function init() {
     URL = prompt("Enter maze URL:", "http://localhost:8080/get/10:10:NewForm");
@@ -124,12 +124,13 @@ function init() {
 
 function update_loop() {  
     // Set/reset visited list 
-    visited_list = ["0x0"];
+	
+	resetGlobalVars()
     
     console.log("Sending request...");
     var request = new XMLHttpRequest();
     
-    // Primitve error checking
+    
     if (!request) {
       alert('Unable to create instance of request');
       return false;
@@ -151,29 +152,30 @@ function update_loop() {
         // 4 (complete) or (request finished and response is ready)
     
         if (request.readyState === request.DONE) {
-          if (request.status === 200) {
+        	if (request.status === 200) {
 
-            var mazeJson = request.response;
-			
-			if (reset_trigger == true) {
+				var mazeJson = request.response;
 				
-				rows = Number(mazeJson.height);
-				cols = Number(mazeJson.width);
-				console.log(rows);
-				console.log(cols);
-				// generate maze grid
-				genMazeGrid(rows, cols);
+				// TODO: check instead for maze ID
+				if (reset_trigger == true) {
+					
+					rows = Number(mazeJson.height);
+					cols = Number(mazeJson.width);
 
-				// carve maze
-				carve_maze(mazeJson);
+					// generate maze grid
+					genMazeGrid(rows, cols);
 
-				// carve a random maze
-				// carve_maze_random("0x0");
-				
-				reset_trigger = false;
-			}
-          } else {
-            alert("Unable to connect to server. \n\n Request status: " + request.status);
+					// carve maze
+					carve_maze(mazeJson);
+
+					// carve a random maze
+					// carve_maze_random("0x0");
+					reset_trigger = false;
+					
+				}
+			} 
+			else {
+            	alert("Unable to connect to server. \n\n Request status: " + request.status);
             }			
         }
     }
@@ -211,18 +213,19 @@ function genMazeGrid(rows, cols) {
     var maze_width = cols * 32;
     maze_container = document.getElementById("maze_container");
 
-    // if(document.getElementById("maze_container")==null){
-    if (maze_container == null) {
-        maze_container = document.createElement('div');
-        maze_container.setAttribute("id", "maze_container");
-        document.body.appendChild(maze_container);
-        maze_container.style.width = maze_width + "px";
-    }
-    else {
-        maze_container.innerHTML = "";
-
-    }
     
+		if (maze_container == null) {
+			maze_container = document.createElement('div');
+			maze_container.setAttribute("id", "maze_container");
+			document.getElementById("main").appendChild(maze_container);
+			maze_container.style.width = maze_width + "px";
+			maze_container.style.zoom = "25%";
+		}
+		else {
+			maze_container.innerHTML = "";
+
+		}
+	
  
 
   // generate grid having rows x cols
