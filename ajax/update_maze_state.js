@@ -50,8 +50,9 @@ var interval_ms =500;
 // REST API to fetch maze state
 var URL = 'http://localhost:8080/get/10:10:NewForm';
 
-// When reset_trigger is false, maze needs to be drawn/redrawn
-var reset_trigger = false;
+// only render maze on screen when json contains a new maze
+// having a unique maze ID 
+var current_maze_id = null;
 
 
 
@@ -82,28 +83,30 @@ document.getElementById('game5').addEventListener("click", () => {
 
 
 window.addEventListener("resize", () => {
-	resizeContainer();
+	// Window resizes wont have to be timed to take
+	// place after JSON is received, since maze (and thus cols)
+	// will most likely have already been received
+	maze_width = cols*30;
+	resizeContainer(maze_width);
 });
 
 
-function resizeContainer() {
-
-		// Width of maze_container - cells are 30px each
-		let maze_width = cols * 30;
+function resizeContainer(maze_width) {
 
 		// Width of parent container of maze_container
 		let parent_width = parseInt(window.getComputedStyle(document.getElementById("main"), null).getPropertyValue("width"), 10);
 		
 		// zoom to fit if maze is too large
 		if (maze_width > parent_width) {
-			// maze_container.style.zoom = "40%";
+			// zooms to fit 97% the width of parent container, 
+			// keeping aspect ratio 
 			let zoom_value = ((parent_width / maze_width)*97).toFixed(3).toString() + "%";
 			maze_container.style.zoom = zoom_value;
 		}
 		else {
 			maze_container.style.zoom = "100%";
 		}
-}
+}; // end resizeContainer
 
 
 
@@ -141,9 +144,8 @@ function init() {
 };
 
 function update_loop() {  
-    // Set/reset visited list 
 	
-	resetGlobalVars()
+
     
     // console.log("Sending request...");
     var request = new XMLHttpRequest();
@@ -174,25 +176,28 @@ function update_loop() {
 
 				var mazeJson = request.response;
 				
-				// TODO: check instead for maze ID
-				if (reset_trigger == true) {
+				// Render maze only when JSON contains a new one
+				if (current_maze_id != mazeJson._id) {
 					
+					// Set/reset visited list 
+					resetGlobalVars()
 					rows = Number(mazeJson.height);
 					cols = Number(mazeJson.width);
 
 					let maze_header = document.getElementById("maze_header");
 					maze_header.innerHTML = mazeJson.seed + " <small>(" + mazeJson.height + " x " + mazeJson.width + ")</small>";
-					console.log(mazeJson.seed);
 					// generate maze grid
 					genMazeGrid(rows, cols);
 
 					// carve maze
 					carve_maze(mazeJson);
 
-					// carve a random maze
+					// or carve a random maze (only one carve_maze function should be activated)
 					// carve_maze_random("0x0");
-					reset_trigger = false;
-					
+
+					// assign current maze ID
+					current_maze_id = mazeJson._id;
+
 				}
 			} 
 			else {
@@ -249,7 +254,7 @@ function genMazeGrid(rows, cols) {
 	}
 	
 	// resize maze_container when maze is too large
-	resizeContainer();
+	resizeContainer(maze_width);
  
 
 	// generate grid having rows x cols
