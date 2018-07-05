@@ -179,6 +179,10 @@ function update_loop() {
 					
 					rows = Number(mazeJson.height);
 					cols = Number(mazeJson.width);
+
+					let maze_header = document.getElementById("maze_header");
+					maze_header.innerHTML = mazeJson.seed + " <small>(" + mazeJson.height + " x " + mazeJson.width + ")</small>";
+					console.log(mazeJson.seed);
 					// generate maze grid
 					genMazeGrid(rows, cols);
 
