@@ -59,32 +59,32 @@ var reset_trigger = false;
 
 /** Event listeners */
 
-game1.addEventListener("click", () => {
+document.getElementById('game1').addEventListener("click", () => {
 	
 	URL="http://localhost:8080/get/10:15:SimpleSample";	
 	
 });
 
-game2.addEventListener("click", () => {
+document.getElementById('game2').addEventListener("click", () => {
 	
 	URL="http://localhost:8080/get/10:10:KrabbyKrust";
 	
 });
 
-game3.addEventListener("click", () => {
+document.getElementById('game3').addEventListener("click", () => {
 	
 	URL="http://localhost:8080/get/10:10:SnarkyShark";
 	
 });
 
 
-game4.addEventListener("click", () => {
+document.getElementById('game4').addEventListener("click", () => {
 	
 	URL="http://localhost:8080/get/10:10:SlipperyDevil"; 
 	
 });
 
-game5.addEventListener("click", () => {
+document.getElementById('game5').addEventListener("click", () => {
 	
 	URL="http://localhost:8080/get/25:50:TooBig";
 
@@ -130,7 +130,7 @@ function update_loop() {
     console.log("Sending request...");
     var request = new XMLHttpRequest();
     
-    
+    // TODO: implement better error checking
     if (!request) {
       alert('Unable to create instance of request');
       return false;
@@ -161,12 +161,11 @@ function update_loop() {
 					
 					rows = Number(mazeJson.height);
 					cols = Number(mazeJson.width);
-
 					// generate maze grid
 					genMazeGrid(rows, cols);
 
 					// carve maze
-					carve_maze(mazeJson);
+					// carve_maze(mazeJson);
 
 					// carve a random maze
 					// carve_maze_random("0x0");
@@ -195,7 +194,6 @@ function update_loop() {
 
 function genMazeGrid(rows, cols) {
 
-	// Initialize maze arrays
 	// initialize maze_map & maze_index
 	maze_index = [];
 	maze_map = [];
@@ -210,22 +208,29 @@ function genMazeGrid(rows, cols) {
 
 	// cells are 30px each having left and right borders
 	// of 1px each. Total maze width is then:
-    var maze_width = cols * 32;
+	var maze_width = cols * 30;
+	
     maze_container = document.getElementById("maze_container");
 
-    
-		if (maze_container == null) {
-			maze_container = document.createElement('div');
-			maze_container.setAttribute("id", "maze_container");
-			document.getElementById("main").appendChild(maze_container);
-			maze_container.style.width = maze_width + "px";
-			maze_container.style.zoom = "25%";
-		}
-		else {
-			maze_container.innerHTML = "";
+	// reset maze_container (start with a clean slate)
+	if (maze_container == null) {
+		maze_container = document.createElement('div');
+		maze_container.setAttribute("id", "maze_container");
+		document.getElementById("main").appendChild(maze_container);
+		maze_container.style.width = maze_width + "px";
+		
+	}
+	else {
+		maze_container.innerHTML = "";
 
-		}
+	}
 	
+	let parent_width = document.getElementById('main').style.width;
+	console.log(parent_width);
+	// zoom to fit if maze is too large
+	if (maze_width > parent_width) {
+		maze_container.style.zoom =  (parent_width / maze_width) + "%";
+	}
  
 
   // generate grid having rows x cols

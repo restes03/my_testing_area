@@ -4,14 +4,18 @@
  */
 
 #main {
-
+	background-color: white;
 	height: 100%;
 	width: 100%;
+	padding: 0;
+	margin: 0;
 
 }
 
 #maze_container {
-	background-color: #dbdbdb;
+	background-color: blue;
+	padding: 0;
+	margin: 0;
 /* matrix(scaleX(),skewY(),skewX(),scaleY(),translateX(),translateY())
  transform: matrix(.5, 0, 0, .5, -50, -50); */
 }
@@ -48,9 +52,8 @@
 	display: inline-block;
 	height: 30px;
 	width: 30px;
-	text-align: center;
-	line-height: 30px;
-	vertical-align: middle;
+	
+	
 	margin: 0;
 	padding: 0;
 }
