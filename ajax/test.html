@@ -19,13 +19,16 @@
 
     <body>
 
-<div id="main">
+<div id="main" style="width:100%">
     
 </div>
 <div id="added"></div>
 
         <script> 
-            document.getElementById("main").appendChild(document.getElementById("added"));
+            document.getElementById("main").addEventListener("resize", () => {
+                var elem = document.getElementById("main");
+                var parent_width_px = window.getComputedStyle(elem, null).getPropertyValue("width");
+            });
         </script>
     </body>
 </html>

@@ -1,13 +1,13 @@
 /** TODO:
  * 
- * 1. Carve maze using json data
- * 2. Solve maze
- * 3. Fading visited path
- * 4. Store visited cells in stack. 
- * 4. Highlight solution path
- * 3. Refactor getNeighbor. Cycle through an array rather than switch?
- * 9. make sure maze_index[][] values are matching up
- * 4. implement proper error handling
+ * 1. Label mazes/games
+ * 2. Add pop-out feature
+ * 3. Highlight solution path
+ * 4. Fading visited path
+ * 5. call genMazeGrid, carveMaze, when JSON sends different ID
+ * 6. Store visited cells in stack. 
+ * 7. Refactor getNeighbor. Cycle through an array rather than switch?
+ * 8. implement proper error handling
  */
 
 
@@ -60,35 +60,53 @@ var reset_trigger = false;
 /** Event listeners */
 
 document.getElementById('game1').addEventListener("click", () => {
-	
 	URL="http://localhost:8080/get/10:15:SimpleSample";	
-	
 });
 
 document.getElementById('game2').addEventListener("click", () => {
-	
 	URL="http://localhost:8080/get/10:10:KrabbyKrust";
-	
 });
 
 document.getElementById('game3').addEventListener("click", () => {
-	
 	URL="http://localhost:8080/get/10:10:SnarkyShark";
-	
 });
 
 
 document.getElementById('game4').addEventListener("click", () => {
-	
 	URL="http://localhost:8080/get/10:10:SlipperyDevil"; 
-	
 });
 
 document.getElementById('game5').addEventListener("click", () => {
-	
 	URL="http://localhost:8080/get/25:50:TooBig";
-
 });
+
+
+window.addEventListener("resize", () => {
+	resizeContainer();
+});
+
+
+function resizeContainer() {
+
+		// Width of maze_container - cells are 30px each
+		let maze_width = cols * 30;
+
+		// Width of parent container of maze_container
+		let parent_width = parseInt(window.getComputedStyle(document.getElementById("main"), null).getPropertyValue("width"), 10);
+		
+		// zoom to fit if maze is too large
+		if (maze_width > parent_width) {
+			// maze_container.style.zoom = "40%";
+			let zoom_value = ((parent_width / maze_width)*97).toFixed(3).toString() + "%";
+			maze_container.style.zoom = zoom_value;
+		}
+		else {
+			maze_container.style.zoom = "100%";
+		}
+}
+
+
+
 
 // occasional unresponsive behavior: URL changes in event listener but the following vars arent reset,
 // as if the entire function wasnt even called.
@@ -117,7 +135,7 @@ function resetGlobalVars() {
 
 
 function init() {
-    URL = prompt("Enter maze URL:", "http://localhost:8080/get/10:10:NewForm");
+	
 	setInterval(update_loop, interval_ms);
 	
 };
@@ -127,7 +145,7 @@ function update_loop() {
 	
 	resetGlobalVars()
     
-    console.log("Sending request...");
+    // console.log("Sending request...");
     var request = new XMLHttpRequest();
     
     // TODO: implement better error checking
@@ -165,7 +183,7 @@ function update_loop() {
 					genMazeGrid(rows, cols);
 
 					// carve maze
-					// carve_maze(mazeJson);
+					carve_maze(mazeJson);
 
 					// carve a random maze
 					// carve_maze_random("0x0");
@@ -194,6 +212,8 @@ function update_loop() {
 
 function genMazeGrid(rows, cols) {
 
+	maze_width = cols * 30;
+
 	// initialize maze_map & maze_index
 	maze_index = [];
 	maze_map = [];
@@ -206,11 +226,9 @@ function genMazeGrid(rows, cols) {
 		}
 	}
 
-	// cells are 30px each having left and right borders
-	// of 1px each. Total maze width is then:
-	var maze_width = cols * 30;
 	
-    maze_container = document.getElementById("maze_container");
+	
+	maze_container = document.getElementById("maze_container");
 
 	// reset maze_container (start with a clean slate)
 	if (maze_container == null) {
@@ -219,21 +237,18 @@ function genMazeGrid(rows, cols) {
 		document.getElementById("main").appendChild(maze_container);
 		maze_container.style.width = maze_width + "px";
 		
+		
 	}
 	else {
 		maze_container.innerHTML = "";
 
 	}
 	
-	let parent_width = document.getElementById('main').style.width;
-	console.log(parent_width);
-	// zoom to fit if maze is too large
-	if (maze_width > parent_width) {
-		maze_container.style.zoom =  (parent_width / maze_width) + "%";
-	}
+	// resize maze_container when maze is too large
+	resizeContainer();
  
 
-  // generate grid having rows x cols
+	// generate grid having rows x cols
     for (var i = 0; i < rows; i++) {
         // Create first row...
         var row = document.createElement('div');
