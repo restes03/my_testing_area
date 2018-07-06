@@ -1,6 +1,6 @@
 /** TODO:
  * 
- * 1. Label mazes/games
+ * 1. load game buttons from json data? This would prevent hard-coding game URLS...
  * 2. Add pop-out feature
  * 3. Highlight solution path
  * 4. Fading visited path
@@ -29,6 +29,9 @@ var maze_index;
 // Initialized/reset, and made two-dimensional in initMaze()
 var maze_map;
 
+// Two-dimensional array containing cell tags
+var maze_tags;
+
 // Used by solve_maze() and getNeighbor() to track visited cells
 // List is reset in the beginning of every iteration of update_loop(),
 // and solve_init()
@@ -45,10 +48,13 @@ var DIRECTION = Object.freeze({
 });
 
 // Time between refresh cycles
-var interval_ms =500;
+var interval_ms =250;
 
 // REST API to fetch maze state
-var URL = 'http://localhost:8080/get/10:10:NewForm';
+var URL = 'http://maze.code-camp-2018.com/get/3:3:TinyTim';
+
+// DEVELOPMENT SERVER
+// var URL = 'http://localhost:8080/get/10:10:NewForm';
 
 // only render maze on screen when json contains a new maze
 // having a unique maze ID 
@@ -61,25 +67,26 @@ var current_maze_id = null;
 /** Event listeners */
 
 document.getElementById('game1').addEventListener("click", () => {
-	URL="http://localhost:8080/get/10:15:SimpleSample";	
+	URL = 'http://maze.code-camp-2018.com/get/3:3:TinyTim';
+	//URL="http://localhost:8080/get/10:15:SimpleSample";	
 });
 
 document.getElementById('game2').addEventListener("click", () => {
-	URL="http://localhost:8080/get/10:10:KrabbyKrust";
+	URL = 'http://maze.code-camp-2018.com/get/10:15:SimpleSample';
+	//URL="http://localhost:8080/get/10:10:KrabbyKrust";
 });
 
 document.getElementById('game3').addEventListener("click", () => {
-	URL="http://localhost:8080/get/10:10:SnarkyShark";
+	URL = 'http://maze.code-camp-2018.com/get/50:50:HappyClam';
+	// URL="http://localhost:8080/get/10:10:SnarkyShark";
 });
 
 
 document.getElementById('game4').addEventListener("click", () => {
-	URL="http://localhost:8080/get/10:10:SlipperyDevil"; 
+	URL = 'http://maze.code-camp-2018.com/get/50:50:Tower%20of%20Power';
+	//URL="http://localhost:8080/get/10:10:SlipperyDevil"; 
 });
 
-document.getElementById('game5').addEventListener("click", () => {
-	URL="http://localhost:8080/get/25:50:TooBig";
-});
 
 
 window.addEventListener("resize", () => {
@@ -91,61 +98,22 @@ window.addEventListener("resize", () => {
 });
 
 
-function resizeContainer(maze_width) {
-
-		// Width of parent container of maze_container
-		let parent_width = parseInt(window.getComputedStyle(document.getElementById("main"), null).getPropertyValue("width"), 10);
-		
-		// zoom to fit if maze is too large
-		if (maze_width > parent_width) {
-			// zooms to fit 97% the width of parent container, 
-			// keeping aspect ratio 
-			let zoom_value = ((parent_width / maze_width)*97).toFixed(3).toString() + "%";
-			maze_container.style.zoom = zoom_value;
-		}
-		else {
-			maze_container.style.zoom = "100%";
-		}
-}; // end resizeContainer
-
-
-
-
-// occasional unresponsive behavior: URL changes in event listener but the following vars arent reset,
-// as if the entire function wasnt even called.
-
-// After further investigation, console.log calls, but either
-// the variables arent retaining their value or arent being reset
-
-// Upon even further investigation, variables being reset in resetGlobalVars()
-//  arent retaining their value 
-
-// Could it be that resetGlobalVars() or some other function on the stack is competing with
-// setInterval()?
-
-// are event handlers asynchronous? 
-
-// event handler and setInterval() seem to be competing... 
-function resetGlobalVars() {
-
-	// update instead using maze ID
-	reset_trigger = true;
-	rows = 0;
-	cols = 0;
-
-
-};
-
-
+// EVENT CHAIN STARTS HERE
+/** Function init() - kicks off the update loop
+ * using setInterval
+ */
 function init() {
 	
 	setInterval(update_loop, interval_ms);
 	
 };
 
+
+
+
 function update_loop() {  
 	
-
+	console.log("Sending request...");
     
     // console.log("Sending request...");
     var request = new XMLHttpRequest();
@@ -175,12 +143,13 @@ function update_loop() {
         	if (request.status === 200) {
 
 				var mazeJson = request.response;
-				
+				console.log(mazeJson);
 				// Render maze only when JSON contains a new one
 				if (current_maze_id != mazeJson._id) {
 					
 					// Set/reset visited list 
-					resetGlobalVars()
+					rows = 0;
+					cols = 0;
 					rows = Number(mazeJson.height);
 					cols = Number(mazeJson.width);
 
@@ -223,15 +192,18 @@ function genMazeGrid(rows, cols) {
 
 	maze_width = cols * 30;
 
-	// initialize maze_map & maze_index
+	// initialize maze_map, maze_index, and maze_tags
 	maze_index = [];
 	maze_map = [];
+	maze_tags = [];
 	for (var i = 0; i < rows; i++) {
 		maze_index.push(new Array(cols));
 		maze_map.push(new Array(cols));
+		maze_tags.push(new Array(cols));
 		for (var j = 0; j < cols; j++) {
 			maze_index[i][j] = 0;
 			maze_map[i][j] = 0;
+			maze_tags[i][j] = 0;
 		}
 	}
 
@@ -282,18 +254,27 @@ function genMazeGrid(rows, cols) {
   }
 }; // end genMazeGrid()
 
-
+/** Function carve_maze(mazeJson), used when carving a maze
+ * generated from JSON data.
+ * 
+ * @param mazeJson	JSON data containing a maze, and more specifically
+ * needs the bitwise value for each cell indicating all assigned exits.
+ */
 function carve_maze(mazeJson) {
 	// initialize maze
-	// console.log(rows.length);
 	for(var row = 0; row < rows; row++) {
 		for (var col = 0; col < cols; col++) {
 			maze_map[row][col] = mazeJson.cells[row][col].exits;
+			maze_tags[row][col] = mazeJson.cells[row][col].tags;
 			for (var i = 1; i <= 8; i*=2) {
+				// carve passageways through the grid...
 				if (maze_map[row][col] & i) {
-					// why isnt maze being carved???
 					make_door(maze_index[row][col], i);
 				}
+				if (maze_tags[row][col] & i) {
+					read_tags(current_cell_index, maze_tags[row][cols]);
+				}
+
 			}
 
 		}
@@ -306,7 +287,8 @@ function carve_maze(mazeJson) {
 
 /** Function carve_maze_random(current_cell_index)
  * Carves a path from starting cell at 0x0 to a 
- * random endpoint.
+ * random endpoint. Used when carving a randomly generated
+ * maze.
  * 
  * @param	current_cell_index	The index of the current cell
  * 					having form '1x4' where 1 is the row
@@ -352,8 +334,12 @@ function carve_maze_random(current_cell_index) {
 }; // end carve_maze_random
 
 
+
+
 /** Function getNeighbor(current_cell_index, direction)
- * Returns maze_index[][] index of current_cell_index's <direction> neighbor,
+ * Returns maze_index[][] index of current_cell_index's <direction> neighbor.
+ * This function is only used for carving a random maze, but can be used to solve
+ * any maze.
  * 
  * @param          current_cell_index	maze_index[][] index of current cell
  * @param          direction		Direction to look for neighbor.  
@@ -474,6 +460,26 @@ function getNeighbor(current_cell_index, direction) {
 };
 
 
+
+function read_tags(current_cell_index, bitwise_tags) {
+	if (bitwise_tags & 1) {			//	Start cell
+		// mark starting cell...
+	}
+	else if (bitwise_tags & 2) {	// Finish cell
+		// mark finish cell...
+	}
+	else if (bitwise_tags & 4) {	//	Path
+		document.getElementById(current_cell_index).className += " path";
+	}
+}; // end read_tags(current_cell_index, bitwise_tags)
+
+/** Function make_door(current_cell_index, bitwise_exits)
+ * This function is called by carveMaze(mazeJSON), whereby
+ * it iterates through each cell row by row, opening doors
+ * as necessary. Since unique constituents can be determined
+ * from any bitwise summation, all possible exits can be marked
+ * using a single number, aka 'bitwise_exits'.
+ */
 function make_door(current_cell_index, bitwise_exits) {
 
 		if (bitwise_exits & 1) {	//	north open
@@ -488,7 +494,7 @@ function make_door(current_cell_index, bitwise_exits) {
 		else if (bitwise_exits & 8) {	//	north open
 			document.getElementById(current_cell_index).className +=" openWest";
 		}	
-}
+};	// end make_door(current_cell_index, bitwise_exits)
 
 /** Function make_door_random(current_cell_index, new_cell_index, direction)
  * This function performs two things: 
@@ -502,8 +508,6 @@ function make_door(current_cell_index, bitwise_exits) {
  *                              out of current cell.
  */
 function make_door_random(current_cell_index, new_cell_index, direction) {
-	
-
 	
 	var current_cell = document.getElementById(current_cell_index);
 	var new_cell = document.getElementById(new_cell_index);
@@ -563,9 +567,13 @@ function make_door_random(current_cell_index, new_cell_index, direction) {
     
 };	// end make_door_random()
 
+
 /** Function solve_init()
  * This function resets the visited list, and passes the starting
- * cell to solve_maze. */
+ * cell to solve_maze, effectively kicking off the maze solving 
+ * process. Since the solving algorithm is a recursive
+ * solution, the visited list needs to be set before the solve_maze 
+ * is called.*/
 function solve_init() {
     visited_list = ["0x0"] ;	//	reset visited_list to be used with solve_maze
     
@@ -624,9 +632,9 @@ function solve_maze(current_cell_index) {
 
 
 
-// *********************
-/** Helper functions **/
-// *********************
+// ****************************
+/** Helper/Utility functions **/
+// ****************************
 
 
 
@@ -657,3 +665,43 @@ var min = Math.min(...directions);	// what about negative values??
 	}
 	return directions_randomized;
 };
+
+
+
+/** Function resizeContainer(maze_width) 
+ * called whenever the maze needs to be resized to fit it's container, 
+ * such as when resizing the browser window, or rendering a maze 
+ * larger than the parent container 'main'. Smaller mazes on the 
+ * other hand are not expanded to fill the parent container.
+ * 
+ * @param maze_width	The width, in pixels, of the maze itself. 
+ * This value is used to determine the ratio of the widths belonging to
+ * the maze and its parent container, which translates to the zoom level
+ * necessary to fit the maze inside 97% of the parent container. Note: 97% 
+ * is arbitrary and merely allows a little extra elbow room .
+ * 
+ * 
+ * ---> Also note, that even though 'cols' is global in scope, relying on a global 
+ * value can result in a race condition where resizeContainer is called before 
+ * the update_loop has a chance to complete, which may result in resizeContainer
+ * pulling a value from 'cols' before it is set in the update_loop (ie when a new maze arrives in JSON.)
+ * 
+ * Pulling a value from the global 'cols' in the window resize event listener will likely be fine 
+ * since it doesnt trigger a change in any values.
+ */
+function resizeContainer(maze_width) {
+
+	// Width of parent container of maze_container
+	let parent_width = parseInt(window.getComputedStyle(document.getElementById("main"), null).getPropertyValue("width"), 10);
+	
+	// zoom to fit if maze is too large
+	if (maze_width > parent_width) {
+		// zooms to fit 97% the width of parent container, 
+		// keeping aspect ratio 
+		let zoom_value = ((parent_width / maze_width)*97).toFixed(3).toString() + "%";
+		maze_container.style.zoom = zoom_value;
+	}
+	else {
+		maze_container.style.zoom = "100%";
+	}
+}; // end resizeContainer

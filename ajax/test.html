@@ -1,120 +1,47 @@
 <html>
     <head>
-
         <style>
-            #main {
-                background-color: black;
-                height: 100px;
-                width: 100px;
-                padding: 70px;
-            }    
-            #added {
-                background-color: pink;
+            /* CSS */
+            ul.styleThis a {
+                display: block;
                 height: 50px;
                 width: 50px;
-                margin: auto;
+                background: url'/img/GreenBotSprites.png';
+                padding: 0;
+                margin-top:1em;
+                text-indent: -9999px;
+            }
+            ul.styleThis li.lists a {
+                background-position: 0 -10px;
+            }
+            ul.styleThis li.boxes a {
+                background-position: -10px -10px;
+            }
+            ul.styleThis li.plus a {
+                background-position: -100px -10px;
+            }
+            ul.styleThis li.lists a:hover {
+                background-position: 0 0;
+            }
+            ul.styleThis li.boxes a:hover {
+                background-position: -50px 0;
+            }
+            ul.styleThis li.plus a:hover {
+                background-position: -100px 0;
             }
         </style>
     </head>
-
     <body>
+        <ul class="styleThis">
 
-<div id="main" style="width:100%">
-    
-</div>
-<div id="added"></div>
-
-        <script> 
-/** First some variable explanations:
- * maze_map[][] - 2d array containing bitwise values indicating cell exits
- * visited_list - array or list containing indexes of visited cells (eg. 0x0, 3x9 etc...)
- * current_cell_index - yep...
- * 
- * getNeighbor - returns the index of an immediate neighbor if one exists,
- * or "-1x-1" if specified neighbor is outside of bounds. 
- * 
- */
-
-
-/** Function solve_init() - Start here: 
- * This function resets the visited list, and passes the starting
- * cell to solve_maze, effectively kicking off the maze solving 
- * process. */
- function solve_init() {
-    
-    //	reset visited_list to be used with solve_maze
-    visited_list = ["0x0"] ;	
-    
-    // passing starting cell to solve_maze, can be any cell within the maze.
-	solve_maze("0x0");
-};
-
-
-
-/** Function solve_maze(current_call_index)
- * Finds a solution path through the maze from the starting cell 
- * at 0x0 (top-left) to the ending cell (bottom-right).
- * 
- * @param	current_cell_index	Used to access the current position as 
- * 								the maze is traversed. Acceptable values are
- * 								strings of the form '1x4' where 1 is the row
- * 								and 4 is the column.
- */
-function solve_maze(current_cell_index) {
-    
-    // if current cell is out of bounds,
-    // backtrack and try a different neighbor
-	if (current_cell_index == "-1x-1") {
-		return;
-	}
-		
-	// Add current cell index to visited list
-	visited_list.push(current_cell_index);
-
-    // get row and column values for current cell
-	var temp = current_cell_index.split("x");
-    var row = Number(temp[0]);
-    var col = Number(temp[1]);
-
-        
-        // Task 1: Grunt work (DFS strategy)
-        // Try every possible path within the 
-        // maze until the destination is reached
-        if (maze_map[row][col] & 1) {	//	north open
-			if (!visited_list.includes(maze_index[rows-1][cols-1])) {
-				solve_maze(getNeighbor(current_cell_index, DIRECTION.N));
-			}
-		}
-		if (maze_map[row][col] & 2) {	//	south open
-			if (!visited_list.includes(maze_index[rows-1][cols-1])) {
-				solve_maze(getNeighbor(current_cell_index, DIRECTION.S));
-			}
-		}
-		if (maze_map[row][col] & 4) {	//	east open
-			if (!visited_list.includes(maze_index[rows-1][cols-1])) {
-				solve_maze(getNeighbor(current_cell_index, DIRECTION.E));
-			}
-		}
-		if (maze_map[row][col] & 8) {	//	west open
-			if (!visited_list.includes(maze_index[rows-1][cols-1])) {
-				solve_maze(getNeighbor(current_cell_index, DIRECTION.W));
-			}
-		}
-
-    // Task 2: This is where the magic happens:
-    // Once destination is reached,
-    // highlight the colors along the path moving backward
-    // through the recursive stack
-	if (visited_list.includes(maze_index[rows-1][cols-1])) {
-        // add cell to solution path or tag cell here...
-		document.getElementById(current_cell_index).className += " solutionPath";
-	}
-};	// end solve_maze()
-
-
-
-
-
-        </script>
+                <li class="lists"><a href="#">Lists</a></li>
+                
+                <li class="boxes"><a href="#">Boxes</a></li>
+                
+                <li class="plus"><a href="#">Plus</a></li>
+                
+        </ul>
     </body>
 </html>
+
+
