@@ -1,14 +1,13 @@
 /** TODO:
  * 
- * - remove alerts and implement error logging
+
  * - render solution path after carving maze?
  * - mark starting and finish cells?
  * - load game buttons from json data? This would prevent hard-coding game URLS...
  * - Add pop-out feature
  * - Fading visited path
- * - call genMazeGrid, carveMaze, when JSON sends different ID
- * - Store visited cells in stack. 
  * - Refactor getNeighbor. Cycle through an array rather than switch?
+ * - remove alerts and implement error logging
  * - implement proper error handling
  */
 
