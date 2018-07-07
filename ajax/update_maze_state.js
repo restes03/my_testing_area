@@ -1,5 +1,7 @@
 /** TODO:
  * 
+ * 1. render solution path after carving maze?
+ * 2. mark starting and finish cells?
  * 1. load game buttons from json data? This would prevent hard-coding game URLS...
  * 2. Add pop-out feature
  * 3. Highlight solution path
@@ -67,23 +69,23 @@ var current_maze_id = null;
 /** Event listeners */
 
 document.getElementById('game1').addEventListener("click", () => {
-	URL = 'http://maze.code-camp-2018.com/get/3:3:TinyTim';
+	URL = 'http://code-camp-2018.com/maze/3:3:TinyTim';
 	//URL="http://localhost:8080/get/10:15:SimpleSample";	
 });
 
 document.getElementById('game2').addEventListener("click", () => {
-	URL = 'http://maze.code-camp-2018.com/get/10:15:SimpleSample';
+	URL = 'http://code-camp-2018.com/maze/10:15:SimpleSample';
 	//URL="http://localhost:8080/get/10:10:KrabbyKrust";
 });
 
 document.getElementById('game3').addEventListener("click", () => {
-	URL = 'http://maze.code-camp-2018.com/get/50:50:HappyClam';
+	URL = 'http://code-camp-2018.com/maze/50:50:HappyClam';
 	// URL="http://localhost:8080/get/10:10:SnarkyShark";
 });
 
 
 document.getElementById('game4').addEventListener("click", () => {
-	URL = 'http://maze.code-camp-2018.com/get/50:50:Tower%20of%20Power';
+	URL = 'http://code-camp-2018.com/maze/50:50:Tower%20of%20Power';
 	//URL="http://localhost:8080/get/10:10:SlipperyDevil"; 
 });
 
