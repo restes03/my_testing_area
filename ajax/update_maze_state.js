@@ -1,15 +1,15 @@
 /** TODO:
  * 
- * 1. render solution path after carving maze?
- * 2. mark starting and finish cells?
- * 1. load game buttons from json data? This would prevent hard-coding game URLS...
- * 2. Add pop-out feature
- * 3. Highlight solution path
- * 4. Fading visited path
- * 5. call genMazeGrid, carveMaze, when JSON sends different ID
- * 6. Store visited cells in stack. 
- * 7. Refactor getNeighbor. Cycle through an array rather than switch?
- * 8. implement proper error handling
+ * - remove alerts and implement error logging
+ * - render solution path after carving maze?
+ * - mark starting and finish cells?
+ * - load game buttons from json data? This would prevent hard-coding game URLS...
+ * - Add pop-out feature
+ * - Fading visited path
+ * - call genMazeGrid, carveMaze, when JSON sends different ID
+ * - Store visited cells in stack. 
+ * - Refactor getNeighbor. Cycle through an array rather than switch?
+ * - implement proper error handling
  */
 
 
@@ -50,7 +50,7 @@ var DIRECTION = Object.freeze({
 });
 
 // Time between refresh cycles
-var interval_ms =250;
+var interval_ms =500;
 
 // REST API to fetch maze state
 var URL = 'http://maze.code-camp-2018.com/get/3:3:TinyTim';
