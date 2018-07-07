@@ -113,9 +113,6 @@ function init() {
 
 function update_loop() {  
 	
-	console.log("Sending request...");
-    
-    // console.log("Sending request...");
     var request = new XMLHttpRequest();
     
     // TODO: implement better error checking
@@ -143,7 +140,6 @@ function update_loop() {
         	if (request.status === 200) {
 
 				var mazeJson = request.response;
-				console.log(mazeJson);
 				// Render maze only when JSON contains a new one
 				if (current_maze_id != mazeJson._id) {
 					
@@ -228,6 +224,12 @@ function genMazeGrid(rows, cols) {
 	// resize maze_container when maze is too large
 	resizeContainer(maze_width);
  
+	// Generate row marking the starting cell
+	var start = document.createElement('div');
+	start.setAttribute("class", "row");
+	start.setAttribute("id", "start_mark_row");
+	maze_container.appendChild(start);
+	start.style.width = maze_width + "px";
 
 	// generate grid having rows x cols
     for (var i = 0; i < rows; i++) {
@@ -252,6 +254,13 @@ function genMazeGrid(rows, cols) {
             maze_index[i][j] = id_string;
       }
   }
+
+  // Generate row marking the ending (finish) cell
+	var finish = document.createElement('div');
+	finish.setAttribute("class", "row");
+	finish.setAttribute("id", "finish_mark_row");
+	maze_container.appendChild(finish);
+	finish.style.width = maze_width + "px";
 }; // end genMazeGrid()
 
 /** Function carve_maze(mazeJson), used when carving a maze
@@ -272,7 +281,7 @@ function carve_maze(mazeJson) {
 					make_door(maze_index[row][col], i);
 				}
 				if (maze_tags[row][col] & i) {
-					read_tags(current_cell_index, maze_tags[row][cols]);
+					read_tags(maze_index[row][col], maze_tags[row][col]);
 				}
 
 			}
@@ -464,9 +473,24 @@ function getNeighbor(current_cell_index, direction) {
 function read_tags(current_cell_index, bitwise_tags) {
 	if (bitwise_tags & 1) {			//	Start cell
 		// mark starting cell...
+		
+		// mark using start_mark_row?
+		// var temp = current_cell_index.split("x");
+		// var tmp_col = Number(temp[1]);
+		
+
+		// add start cell to path
+		document.getElementById(current_cell_index).className += " path";
 	}
 	else if (bitwise_tags & 2) {	// Finish cell
 		// mark finish cell...
+
+		// mark using finish_mark_row?
+		// var temp = current_cell_index.split("x");
+		// var tmp_col = Number(temp[1]);
+
+		// add finish cell to path
+		document.getElementById(current_cell_index).className += " path";
 	}
 	else if (bitwise_tags & 4) {	//	Path
 		document.getElementById(current_cell_index).className += " path";
