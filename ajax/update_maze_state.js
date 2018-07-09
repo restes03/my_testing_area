@@ -1,16 +1,22 @@
 /** TODO:
  * 
- * 1. render solution path after carving maze?
- * 2. mark starting and finish cells?
- * 1. load game buttons from json data? This would prevent hard-coding game URLS...
- * 2. Add pop-out feature
- * 3. Highlight solution path
- * 4. Fading visited path
- * 5. call genMazeGrid, carveMaze, when JSON sends different ID
- * 6. Store visited cells in stack. 
- * 7. Refactor getNeighbor. Cycle through an array rather than switch?
- * 8. implement proper error handling
+
+ * - mark starting and finish cells?
+ * - load game buttons from json data? This would prevent hard-coding game URLS...
+ * - Add pop-out feature
+ * - Fading visited path
+ * - Refactor getNeighbor. use ternary like in maze.ts rather than switch?
+ * - remove alerts and implement error logging
+ * - implement proper error handling
+ * - play/pause/speed controls
+ * - do not send request when one is currently in flight
+ * - set a response timeout
+ * - make routine to change character position to allow client to play out game
+ * - render maze_container on server, pull html once 
+ * - look into pug templates
+ * 
  */
+
 
 
 
