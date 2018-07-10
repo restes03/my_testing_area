@@ -4,17 +4,17 @@
     </head>
     <body>
 
-        <div id="container"> 
-            <div class="row" style="width: 20px; height: 20px;overflow:auto;">
-                <span class="row" style="width: 20px; height: 20px;"></span>
+            <div id="container">
+                <span class="cell" style="width: 20px; height: 20px;"></span>
                 <span></span>
                 <span></span>
-            </div>
+            
+            
             <div id="demo">
 
             </div>
-
         </div>
+
         <script>
 
 
@@ -29,15 +29,16 @@
                     // Width of parent container of maze_container
             
                     
-                    var row = document.querySelector(".row");
-                    var cell = document.querySelector(".cell");
-                    cell.innerHTML = "hello";
                     
+                    var cell = document.getElementById("container").querySelector(".cell");
+
+                    var row = document.getElementById("container");
+                    cell.innerHTML = "hello";                    
                     document.getElementById('demo').innerHTML = row.childElementCount;
                     
                     
-                    row.style.backgroundColor = "blue";
-                    cell.style.backgroundColor = "red";
+                    cell.style.backgroundColor = "blue";
+                    // cell.style.backgroundColor = "red";
                     // var theCSSprop = window.getComputedStyle(elem, null).getPropertyValue("background-color");
                     // let parent_width = parseInt(getComputedStyle(document.getElementById("container"), null).getPropertyValue("width"), 10);
                     
