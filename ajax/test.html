@@ -1,47 +1,61 @@
 <html>
     <head>
-        <style>
-            /* CSS */
-            ul.styleThis a {
-                display: block;
-                height: 50px;
-                width: 50px;
-                background: url'/img/GreenBotSprites.png';
-                padding: 0;
-                margin-top:1em;
-                text-indent: -9999px;
-            }
-            ul.styleThis li.lists a {
-                background-position: 0 -10px;
-            }
-            ul.styleThis li.boxes a {
-                background-position: -10px -10px;
-            }
-            ul.styleThis li.plus a {
-                background-position: -100px -10px;
-            }
-            ul.styleThis li.lists a:hover {
-                background-position: 0 0;
-            }
-            ul.styleThis li.boxes a:hover {
-                background-position: -50px 0;
-            }
-            ul.styleThis li.plus a:hover {
-                background-position: -100px 0;
-            }
-        </style>
+
     </head>
     <body>
-        <ul class="styleThis">
 
-                <li class="lists"><a href="#">Lists</a></li>
+            <div id="container">
+                <span class="cell" style="width: 20px; height: 20px;"></span>
+                <span></span>
+                <span></span>
+            
+            
+            <div id="demo">
+
+            </div>
+        </div>
+
+        <script>
+
+
+                window.addEventListener("resize", () => {
+                                        
+                    resizeContainer(20);
+                });
                 
-                <li class="boxes"><a href="#">Boxes</a></li>
                 
-                <li class="plus"><a href="#">Plus</a></li>
-                
-        </ul>
-    </body>
+                function resizeContainer(maze_width) {
+
+                    // Width of parent container of maze_container
+            
+                    
+                    
+                    var cell = document.getElementById("container").querySelector(".cell");
+
+                    var row = document.getElementById("container");
+                    cell.innerHTML = "hello";                    
+                    document.getElementById('demo').innerHTML = row.childElementCount;
+                    
+                    
+                    cell.style.backgroundColor = "blue";
+                    // cell.style.backgroundColor = "red";
+                    // var theCSSprop = window.getComputedStyle(elem, null).getPropertyValue("background-color");
+                    // let parent_width = parseInt(getComputedStyle(document.getElementById("container"), null).getPropertyValue("width"), 10);
+                    
+                    // // zoom to fit if maze is too large
+                    // if (maze_width > parent_width) {
+                    //     // zooms to fit 97% the width of parent container, 
+                    //     // keeping aspect ratio 
+                    //     let zoom_value = ((parent_width / maze_width)*97).toFixed(3).toString() + "%";
+                    //     maze_container.style.zoom = zoom_value;
+                    // }
+                    // else {
+                    //     maze_container.style.zoom = "100%";
+                    // }
+                }; // end resizeContainer
+
+        </script>
+
+
+        </body>
 </html>
-
-
