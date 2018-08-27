@@ -1,0 +1,190 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>this page</title>
+    <style>
+        body {
+            background-color: lightgray;
+            color: black;
+            font-family: 'monospace';
+            
+        }
+
+        img {
+            width: 5px;
+        }
+        .objKeys {
+            display: inline-flex;
+            padding: 3px;
+            flex-wrap: nowrap;
+            color: purple;
+            font-weight: bold;
+        }
+
+        .objValues {
+            display: inline-flex;
+            flex-wrap: nowrap;
+            margin-left: 15px;
+        }
+        ul {
+            display: inline-block;
+            max-width: inherit;
+            list-style-type: none;
+            /* list-style-image: none; */
+            
+        }
+        span:not(.collapsible):before {
+            /* color: darkred; */
+            /* content: "► "; */
+            content: '  ';
+        }
+        span.collapsible:before {
+            color: darkblue;
+            content: "► ";
+        }
+
+/* <!-- 
+        li:before {
+            content: "►";
+            display: block;
+            float: left;
+            width: 1.2em;
+
+        } --> */
+
+
+        #main {
+            width: 600px;
+            background-color: lightslategray;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+
+
+
+<pre id='main'></pre>
+
+
+
+
+
+
+
+<script>
+    var list_expanded = 'list_icon_expanded.png';
+var colors = ['purple', 'green', 'red', 'blue', 'gray', 'orange' ];
+var obj1 = {
+  "userId": 1,
+  "id": 1,
+  "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+  "body": "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto"
+};
+
+var obj2 = [{
+  "userId": 1,
+  "id": 1,
+  "lastly": { 
+              "thiskey": "this value",
+              "anotherkey": "another value",
+              "yetanother": { 
+                              "lastkey": "last value",
+                              "except": "this one"
+                            }
+            },
+  "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+  "body": "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto"
+},
+{
+  "userId": 1,
+  "id": 2,
+  "title": "qui est esse",
+  "lastly": { 
+              "thiskey": "this value",
+              "anotherkey": "another value",
+              "yetanother": { 
+                              "lastkey": "last value",
+                              "except": "this one"
+                            }
+            },
+  "body": "est rerum tempore vitae\nsequi sint nihil reprehenderit dolor beatae ea dolores neque\nfugiat blanditiis voluptate porro vel nihil molestiae ut reiciendis\nqui aperiam non debitis possimus qui neque nisi nulla"
+
+}];
+    printObj(obj2);
+    document.getElementById('main').appendChild(listifyJSON(obj2, 0, 0)); 
+
+
+
+function listifyJSON(obj, color_index) {
+
+    if (obj != null) {
+        // ensure color_index doesnt result in out of bounds error
+        color_index = color_index % colors.length;
+
+        // create list element
+        let ul = document.createElement('UL');
+
+        
+        // iterate through keys
+        for (var k in obj)
+        {
+            if (typeof obj[k] == "object" && obj[k] !== null) {
+                // key's value is object, create <li> element containing key
+                // then append the value as a child list
+                
+                // create list element containing key
+                let li = document.createElement('LI');
+                let textNodeKey = document.createTextNode(k + ': ');
+                let spanKey = document.createElement('span');
+                spanKey.appendChild(textNodeKey);
+                li.appendChild(spanKey);
+                spanKey.className = 'objKeys collapsible';
+                ul.appendChild(li);
+                // ul.style.listStyleImage = 'url(' + list_expanded + ')';
+                // ul.style.listStyleImage = 'none';
+
+                // recursive call to append value as child list
+                ul.appendChild(listifyJSON(obj[k], color_index+1));
+            }
+            else {
+                // key's value is not object, create <li> containing key
+                // and value
+                
+                // append key
+                let textNodeKey = document.createTextNode(k);
+                let spanKey = document.createElement('span');
+                spanKey.setAttribute('class', 'objKeys');
+                spanKey.appendChild(textNodeKey);
+                let li = document.createElement('LI');
+                li.appendChild(spanKey);
+
+                // append value
+                let textNodeValue = document.createTextNode(obj[k]);
+                let divValue = document.createElement('div');
+                divValue.setAttribute('class', 'objValues')
+                divValue.appendChild(textNodeValue);
+                li.appendChild(divValue);
+                // ul.style.listStyleImage = 'none';
+                // append list element to list
+                ul.appendChild(li);
+                
+            }
+        }
+        return ul;
+    }
+}
+
+
+function printObj(obj) { 
+    document.write('<pre>' + JSON.stringify(obj, null, '\t') + '</pre>');
+}
+
+</script>
+
+</body>
+</html>
