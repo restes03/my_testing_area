@@ -17,9 +17,6 @@
             width: 5px;
         }
         .objKeys {
-            display: inline-flex;
-            padding: 3px;
-            flex-wrap: nowrap;
             color: purple;
             font-weight: bold;
         }
@@ -27,7 +24,6 @@
         .objValues {
             display: inline-flex;
             flex-wrap: nowrap;
-            margin-left: 15px;
         }
         ul {
             display: inline-block;
@@ -36,29 +32,18 @@
             /* list-style-image: none; */
             
         }
-        span:not(.collapsible):before {
-            /* color: darkred; */
-            /* content: "► "; */
-            content: '  ';
+        li:not(.collapsible):before {
+            color: darkred;
+            content: '   ';
         }
-        span.collapsible:before {
+        li.collapsible:before {
             color: darkblue;
             content: "► ";
         }
 
-/* <!-- 
-        li:before {
-            content: "►";
-            display: block;
-            float: left;
-            width: 1.2em;
-
-        } --> */
-
-
         #main {
             width: 600px;
-            background-color: lightslategray;
+            background-color: lightsteelblue;
             border-radius: 5px;
             overflow-x: auto;
         }
@@ -139,17 +124,37 @@ function listifyJSON(obj, color_index) {
                 
                 // create list element containing key
                 let li = document.createElement('LI');
-                let textNodeKey = document.createTextNode(k + ': ');
+                let textNodeKey = document.createTextNode(k);
                 let spanKey = document.createElement('span');
                 spanKey.appendChild(textNodeKey);
                 li.appendChild(spanKey);
-                spanKey.className = 'objKeys collapsible';
+                li.className = 'objKeys collapsible';
                 ul.appendChild(li);
-                // ul.style.listStyleImage = 'url(' + list_expanded + ')';
-                // ul.style.listStyleImage = 'none';
-
+                
                 // recursive call to append value as child list
                 ul.appendChild(listifyJSON(obj[k], color_index+1));
+                let next_element = li.nextElementSibling
+                
+                // Hide top-level child <ul>'s
+                while (next_element != null && next_element.nodeName.toLowerCase() != 'ul') {
+                  next_element = next_element.nextElementSibling;  
+                }
+                next_element.style.display = 'none';
+
+                // add event listener
+                li.addEventListener('click', () => {
+                  let next_element = li.nextElementSibling;
+                  while (next_element != null && next_element.nodeName.toLowerCase() != 'ul') {
+                    next_element = next_element.nextElementSibling;  
+                  }
+                  if (next_element.style.display == 'none') {
+                    next_element.style.display = 'block';
+                  } 
+                  else {
+                    next_element.style.display = 'none';
+                  }
+
+                })
             }
             else {
                 // key's value is not object, create <li> containing key
@@ -175,9 +180,21 @@ function listifyJSON(obj, color_index) {
                 
             }
         }
+
         return ul;
     }
 }
+
+// listifyCollapse(document.getElementById('main'));
+
+function listifyCollapse(rootNode) {
+  let list = rootNode.querySelector('');
+  if (rootNode.contains(list)) {
+    console.log(list);
+  }
+}
+
+
 
 
 function printObj(obj) { 
