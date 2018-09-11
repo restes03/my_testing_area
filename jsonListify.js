@@ -180,7 +180,9 @@ function sortObject(obj, sortKey) {
     
     if (typeof obj[0][sortKey] == 'boolean') {
         sortedObject = obj.sort(function sortMethod(a, b) {
-            return (a - b);
+            console.log(a[sortKey]);
+            console.log(b[sortKey]);
+            return (a[sortKey] - b[sortKey]);
             
         })
     }
@@ -191,7 +193,3 @@ function sortObject(obj, sortKey) {
 
     return sortedObject;
 }   // end sortObject
-
-function numberIsDate(num) {
-    return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
-}
