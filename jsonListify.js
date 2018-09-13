@@ -6,7 +6,7 @@ function generateListifiedJSON(obj, sortKey) {
 
 function listifyJSON(obj, sortKey) {
     if (obj != undefined) {
-
+        
         // create list element
         let ul = document.createElement('UL');
         
@@ -26,7 +26,8 @@ function listifyJSON(obj, sortKey) {
                 spanKey.className = 'objKeys';
 
                 if ( obj[k][sortKey] !== undefined) {
-                    let textNodeRoot = document.createTextNode(obj[k][sortKey]);
+                    let root_label = obj[k][sortKey];
+                    let textNodeRoot = document.createTextNode(root_label);
                     let spanRoot = document.createElement('span');
                     spanRoot.appendChild(textNodeRoot);
                     li.appendChild(spanRoot);
@@ -57,7 +58,6 @@ function listifyJSON(obj, sortKey) {
 
 
                     //  2. Add onClick event listener to toggle show/hide
-                    // add event listener
                     li.addEventListener('click', function () {
                     let next_element = li.nextElementSibling;
                     while (next_element != null && next_element.nodeName.toLowerCase() != 'ul') {
@@ -126,7 +126,7 @@ function listifySortKeys(obj, sortKey) {
 
     let radioSortKeys = document.createElement('FORM');
     radioSortKeys.setAttribute('id', 'radioSortKeys');
-    let textNode = document.createTextNode('Sort Keys: ');
+    let textNode = document.createTextNode('Sort by key: ');
     let label = document.createElement('LABEL');
     label.appendChild(textNode);
     radioSortKeys.appendChild(label);
@@ -162,31 +162,45 @@ function listifySortKeys(obj, sortKey) {
 
 
 
-function sortObject(obj, sortKey) {
+function sortObject(obj, sortKey1) {
+    var nestedSortKey = 'name';
     var sortedObject = [];
-    if (obj != undefined && obj.length > 0) {
+    var x = 0;
+    if (obj && obj.length) {
+
+    
         sortedObject = obj.sort(function sortMethod(a, b) {
-            if (a[sortKey] && b[sortKey]) {
-                switch (typeof a[sortKey] && typeof b[sortKey]) {
-                    case 'number' : return (a[sortKey] > b[sortKey]) ? 1 : (a[sortKey] < b[sortKey]) ? -1 : 0; 
-                    case 'string' : return (a[sortKey].toLowerCase() > b[sortKey].toLowerCase()) ? 1 : (a[sortKey].toLowerCase() < b[sortKey].toLowerCase()) ? -1 : 0;
-                    case 'boolean': return (a[sortKey] - b[sortKey]);
-                    case 'object' : {
-
-                        // // // recursively sort objects. defaults to id. 
-                        // a = sortObject(a[sortKey], 'id');
-                        // b = sortObject(a[sortKey], 'id');
-                        // BUG --> Having issues because of lengths of 0 produced by objects returned from recursive call to  sortObject
-                    
-
-                        // sort by object length
-                        return (a.length && b.length) ? (b.length - a.length) : (a.length) ? 1 : (b.length) ? -1 : 0;
-                        
-                    }
+            if (a[sortKey1] && b[sortKey1]) {
+                // boolean or number
+                if (!isNaN(a[sortKey1] - b[sortKey1])) {
+                    return a[sortKey1] - b[sortKey1];
+                } 
+                
+                switch (typeof a[sortKey1] && typeof b[sortKey1]) {
+                    case 'string' : return (a[sortKey1].toLowerCase() > b[sortKey1].toLowerCase()) ? 1 : (a[sortKey1].toLowerCase() < b[sortKey1].toLowerCase()) ? -1 : 0;
+                }
+                if (a[sortKey1].length || b[sortKey1].length) {
+                    a[sortKey1] = sortObject(a[sortKey1], nestedSortKey)
+                    b[sortKey1] = sortObject(b[sortKey1], nestedSortKey)
+                    return (b[sortKey1].length - a[sortKey1].length)
                 }
             }
-            return (a[sortKey]) ? -1 : (b[sortKey]) ? 1 : 0;
+
+            // console.log(a[sortKey1] + '... ' + ((a[sortKey1]) ? -1 : (b[sortKey1]) ? 1 : 0) + ' ...' + b[sortKey1]);
+            return (a[sortKey1]) ? -1 : (b[sortKey1]) ? 1 : 0;
         })
     }
+    else sortedObject = obj;
     return sortedObject;
 }   // end sortObject
+
+
+/** function isValidDate(var num)
+ * 
+ * 
+ * 
+ * 
+ */
+function isValidDate(date) {
+    return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
+}
