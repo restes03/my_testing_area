@@ -1,63 +1,75 @@
 'use strict';
-/** isValidator.js - Small module for validating URL strings
+/** validator.js - Small module for validating URL strings obtained from user input
  * 
  * @author: Russell Estes estex198@gmail.com
- * 
  */
-
 
 
 // replace with fs read?
 require('dotenv').config({path: '.env'});
 var url = require('url');
 
-
-
-
-
-
 var validator = {
 
-    isValidURL : function(url_string) {
-        let regex = new RegExp(/(https:\/\/|http:\/\/|ftp:\/\/){1}([a-z]{1,3})+([\_\-\.]{1}[a-z0-9]+)*\.([a-z]{2,3}\b){1}/g);
+    hasValidProtocol : function(url_string) {
+        let regex = new RegExp(/(^https:\/\/\b){1}/);
         if (regex.test(url_string)) {
             return true;
         }
-        else {
-            console.log('Error: Invalid URL string: isValidURL() requires the following:\n ' + 
-            '\t- Valid web protocol (limited to: https, http, ftp)\n' +
-            '\t- Valid domain extension (e.g. \'.com\', \'.org\', \'.ca\', etc...)  \n' + 
-            '\t- Domain names may only include the following characters (\'_\',\'-\',\'.\',a-z,0-9)\n' +
-            '\t[' + url_string + '] --> Invalid URL string');
-            return false;
-        }
+        else throw new Error('Valid web protocols limited to https!\n');
     },
-   
 
-
-    isValidDomain : function(url_string) {
+    hasValidDomain : function(url_string) {
         const DOMAIN_WHITELIST = process.env.DOMAIN_WHITELIST.split(',');
         let temp;
-        let regex = new RegExp(/([a-z]{1,3})+([\_\-\.]{1}[a-z0-9]+)*\.([a-z]{2,3}){1}/g);
+        let regex = new RegExp(/([a-z]{1,3})+([\_\-\.]{1}[a-z0-9]+)*\.([a-z]{2,3}\b){1}/);
         if (regex.test(url_string)) {
             temp = url.parse(url_string);
-            // temp = url_string.match(regex)[0];
             if (DOMAIN_WHITELIST.includes(temp.hostname)) {
                 return true;
             } 
-            else {
-                console.log('Error: Invalid domain in URL string: isValidDomain() requires that urls contain a domain that is whitelisted\n' + 
-                            '\t ' + temp.hostname + ' --> Not whitelisted');
-            }
+            else throw new Error('Domain not whitelisted: ' + temp.hostname);
         }
-        else {
-            console.log('Error: Invalid domain in URL string: isValidDomain() requires the following:\n ' + 
-                        '\t- Valid domain extension (e.g. \'.com\', \'.org\', \'.ca\')  \n' + 
-                        '\t- Domain names may only include valid characters (e.g. _,-,.,a-z,0-9)\n' +
-                        '\t[' + url_string + '] --> Invalid domain');
+        else throw new Error('Invalid URL or domain not whitelisted\n\n\n' +
+                        '\t\tDomain must include: \n\n' + 
+                        '\t\t\t- Valid domain extension (e.g. \'.com\', \'.org\', \'.ca\')  \n' + 
+                        '\t\t\t- Valid characters:\n' +
+                            '\t\t\t\t- Letters (upper/lower)\n' + 
+                            '\t\t\t\t- Integers (0-9)\n' + 
+                            '\t\t\t\t- Underscores ( _ )\n' + 
+                            '\t\t\t\t- Hyphens ( - )\n');
+
+    },
+
+
+    hasValidPathName : function (url_string) {
+        let regex = new RegExp(/\.([a-z]{2,3}\b){1}((\/){1}[a-zA-Z0-9\_\-\?\&\=]+\b)+/);
+        if (regex.test(url_string)) {
+            return true;
         }
-        return false;
+        else throw new Error('URL pathnames may only include the following characters:\n' + 
+                        '\t- Letters (upper/lower)\n' + 
+                        '\t- Integers (0-9)\n' + 
+                        '\t- Non-alphanumeric characters:\n' +
+                        '\t\t- Underscores ( _ )\n' + 
+                        '\t\t- Hyphens ( - )\n' +
+                        '\t\t- Ampersand ( & )\n' +
+                        '\t\t- Equals ( = ) \n' +
+                        '\t\t- Question mark ( ? )\n');
+
+
+    },
+
+
+    hasNoInvalidChars : function(url_string) {
+        let regex = new RegExp(/[\%\<\>\@\#\$\^\*\(\)\{\}\[\]\|\'\"\;\+\,\`\\]/g);
+        if (regex.test(url_string)) {
+            throw new Error('URL string may not include the following characters: \n\n' + 
+            '\t\t-->\t%   < > @ # $ ^ * ( ) { } [ ] | \' " ; + , \` \\ \n');
+        }
+        else return true;
     }
+
 }
 
 module.exports = validator;
