@@ -1,0 +1,99 @@
+'use strict'
+
+var fs = require('fs');
+// var reportGenerator = require('...');
+
+
+function init() {
+    console.log('Running batch process to lock applications in clearcase through UCD');
+    let applicationList = await readDataFromFile();
+    requestLoop(applicationList);
+}
+
+
+
+function readDataFromFile() {
+    let applicationList = [];
+    
+    let fileName = "...";
+    console.log("Reading application data from " + fileName);
+
+    // 1. read text file containing {"work_item_number" : "...", "project_name" : "..."}
+    fs.readfile('result.txt', 'utf8', function(err,data) {
+        if(err) throw err;
+        
+        let lines = data.toString().split("\n");    // split into lines
+        for (let i = 0; i<lines.length; i++) {
+            let chunks = lines[i].split(" ");    // split each line around space chars
+            let obj = {
+                "work_item_number" : "",
+                "project_name" : "",
+            }
+            obj['work_item_number'] = chunks[0];
+            obj['project_name'] = chunks[1];
+            applicationList.push(obj);
+        }
+        
+        console.log(obj);
+    });
+
+}
+
+
+
+function requestLoop(applicationList) {
+    
+    console.log("Sending requests");
+    for (let i = 0; i < applicationList.length; i++) {
+        let statusReport = await submitRequest(applicationList[i]);
+        applicationList[i]['status'] = statusReport;
+        console.log(i + ' of ' + applicationList.length + ' complete.');
+    }
+
+    checkFailures(applicationList);
+
+}
+
+
+
+
+function checkFailures(applicationList) {
+    let failures_report = {
+        "work_item_numbers" : [], 
+        "project_names" : [],
+        "process_batch_id" : [], 
+        "process_status" : [],
+
+    };
+    console.log('Checking for any failures');
+    for (let i = 0; i < applicationList.length; i++) {
+        if (applicationList[i].status.failure) {
+            failures_report['work_item_numbers'].push(applicationList[i]['work_item_number']);
+            failures_report['project_names'].push(applicationList[i]['project_name']);
+            failure_report['process_batch_id'].push(applicationList[i].status.id)
+            failure_report['process_status'].push("failed");
+
+        }
+    }
+
+    genReport(failures_report);
+
+}
+
+function genReport(failures_report) {
+
+    // pass to report generator
+}
+
+
+
+/** TODO
+ * 
+ *  --> function pause(ms);
+ *  --> function submitRequest(application);
+ *      --> submit request (id is returned) then enter
+ *          --> polling loop
+ *              --> let asyncPause = await pause(5000)
+ *              --> if (process not complete) break; // to loop back
+ *              --> else return {"status" : "success or failed"}    // returns to requestLoop()
+ */
